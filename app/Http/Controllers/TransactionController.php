@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReportExport;
 use App\Http\Requests\Transaction\CreateTransactionRequest;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class TransactionController extends Controller
@@ -29,7 +32,7 @@ class TransactionController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('tickets.update', $row->id) . '" data-bs-toggle="modal">Edit</a> <button type="button" data-route="' . route('tickets.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    $actionBtn = '<a href="' . route("transactions.print", $row->id) . '" class="btn btn-sm btn-primary">Print</a> <a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('transactions.update', $row->id) . '" data-bs-toggle="modal">Edit</a> <button type="button" data-route="' . route('transactions.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
                     return $actionBtn;
                 })
                 ->addColumn('ticket', function ($row) {
@@ -62,19 +65,64 @@ class TransactionController extends Controller
         try {
             DB::beginTransaction();
 
+            $transactions = [];
+
             $attr = $request->except('name', 'ticket', 'type_customer', 'print', 'jumlah');
+            $tipe = $request->type_customer;
             $attr['ticket_id'] = $request->ticket;
-            $attr['tipe'] = $request->type_customer;
+            $attr['tipe'] = $tipe;
             $attr['nama_customer'] = $request->name;
+            $attr['metode'] = $request->metode;
+            $attr['cash'] = $request->cash;
+            $attr['amount'] = 1;
+            $attr['harga_ticket'] = $request->harga_ticket;
+            $attr['kembalian'] = $request->kembalian;
+            $attr['discount'] = ($request->harga_ticket * $request->discount) / 100;
             $attr['user_id'] = auth()->user()->id;
 
-            $attr['ticket_code'] = 'TKT' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(1000, 9999);
+            $now = Carbon::now()->format('Y-m-d');
+            $print = 1;
+            $transactions = [];
+            $lastTrx = Transaction::whereDate('created_at', $now)->latest()->first();
 
-            $transaction = Transaction::create($attr);
+            if ($lastTrx) {
+                $notrx = $lastTrx->no_trx + 1;
+            } else {
+                $notrx = 1;
+            }
+
+            if ($request->type_customer == 'individual') {
+                for ($i = 0; $i < $request->amount; $i++) {
+                    $attr['no_trx'] = $notrx++;
+                    $attr['ticket_code'] = 'TKT' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(1000, 9999);
+
+                    $transaction = Transaction::create($attr);
+
+                    $transactions[] = $transaction->id;
+                }
+            } else {
+                $attr['no_trx'] = $notrx;
+                $attr['ticket_code'] = 'GRP' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(1000, 9999);
+                $attr['amount'] = $request->amount;
+
+                $transaction = Transaction::create($attr);
+
+                $transactions = $transaction->id;
+            }
 
             DB::commit();
 
-            return redirect()->route('transactions.index')->with('success', "Transaction berhasil ditambahkan");
+            $tickets = [];
+
+            if ($tipe == 'individual') {
+                foreach ($transactions as $transaction) {
+                    $tickets[] =   Transaction::where('id', $transaction)->first();
+                }
+            } else {
+                $tickets[] = $transaction;
+            }
+
+            return view('transaction.print', compact('tipe', 'print', 'tickets'));
         } catch (\Throwable $th) {
             return $th->getMessage();
             DB::rollBack();
@@ -130,5 +178,30 @@ class TransactionController extends Controller
             DB::rollBack();
             return back()->with('error', $th->getMessage());
         }
+    }
+
+    public function print(Transaction $transaction)
+    {
+        return view('transaction.single-print', compact('transaction'));
+    }
+
+    public function report(Request $request)
+    {
+        $title = 'Report Transaction';
+        $breadcrumbs = ['Master', 'Report Transaction'];
+        $transactions = Transaction::get();
+        $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+        $to = $request->to ? Carbon::parse($request->to)->addDay(1)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+        $tickets = Ticket::get();
+
+        return view('transaction.report', compact('title', 'breadcrumbs', 'transactions', 'from', 'to', 'tickets'));
+    }
+
+    public function export(Request $request)
+    {
+        $from = Carbon::parse(request('from'))->format('Y-m-d');
+        $to = Carbon::parse(request('to'))->addDay(1)->format('Y-m-d');
+
+        return Excel::download(new ReportExport($from, $to), 'Report Transaction.xlsx');
     }
 }

@@ -128,11 +128,11 @@
                     </div>
 
                     <div class="menu-item">
-                        <a href="widget.html" class="menu-link">
+                        <a href="{{ route('transactions.report') }}" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-nutrition bg-blue"></i>
                             </div>
-                            <div class="menu-text">Widgets <span class="menu-label">NEW</span></div>
+                            <div class="menu-text">Report Transaction</div>
                         </a>
                     </div>
 

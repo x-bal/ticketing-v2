@@ -95,8 +95,8 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="amount">Jumlah Orang</label>
-                                <input type="text" name="amount" id="amount" class="form-control" readonly value="1">
+                                <label for="amount">Jumlah</label>
+                                <input type="text" name="amount" id="amount" class="form-control" value="1">
 
                                 @error('amount')
                                 <small class="text-danger">{{ $message }}</small>
@@ -338,13 +338,22 @@
             $("#amount").on('change', function() {
                 let amount = $(this).val();
                 let harga = $('#ticket option:selected').attr('data-harga');
+                let type = $('#type_customer option:selected').val();
                 let discount = $("#discount").val()
                 let harga_ticket = harga * amount;
-                let jumlah = (harga * amount) - discount;
 
-                $("#harga_ticket").val(harga_ticket)
-                $("#jumlah").val(jumlah)
-                $("#cash").val(jumlah)
+                if (type == 'group') {
+                    let jumlah = (harga * amount) - discount;
+                    $("#harga_ticket").val(harga_ticket)
+                    $("#jumlah").val(jumlah)
+                    $("#cash").val(jumlah)
+                } else {
+                    let jumlah = harga - discount;
+                    $("#harga_ticket").val(harga)
+                    $("#jumlah").val(jumlah)
+                    $("#cash").val(jumlah)
+                }
+
             })
 
             $("#discount").on('change', function() {
@@ -361,12 +370,10 @@
                 let type = $(this).val();
 
                 if (type == 'group') {
-                    $("#amount").removeAttr('readonly')
                     $("#print").removeAttr('readonly')
                 } else {
                     $("#amount").val(1)
                     $("#print").val(1)
-                    $("#amount").attr('readonly', 'readonly')
                     $("#print").attr('readonly', 'readonly')
                 }
             })
@@ -375,6 +382,7 @@
                 let metode = $(this).val();
 
                 if (metode != 'cash') {
+                    $("#cash").val(0);
                     $("#cash").attr('readonly', 'readonly')
                 } else {
                     $("#cash").removeAttr('readonly')

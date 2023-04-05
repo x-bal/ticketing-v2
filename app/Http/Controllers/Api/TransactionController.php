@@ -64,15 +64,14 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function checkGroupTicket($ticket)
+    public function checkGroupTicket(Request $request, $ticket)
     {
-
         $transScanned = Transaction::where('ticket_code', $ticket)->where('tipe', 'group')
             ->select(['amount', 'amount_scanned', 'status'])->first();
 
         Transaction::where('ticket_code', $ticket)
             ->update([
-                "gate" => 1,
+                "gate" => $request->gate,
             ]);
 
         if (!$transScanned) {

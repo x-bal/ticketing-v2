@@ -26,6 +26,6 @@ Route::get('ticket/{ticket}/individu-check', [TransactionController::class, 'che
 Route::get('ticket/{ticket}/group-check', [TransactionController::class, 'checkGroupTicket']);
 Route::get('ticket/code', [TicketController::class, 'getCode']);
 Route::get('ticket/{id}/printQR', [TicketController::class, 'printQR']);
-Route::get('ticket/print-qr/{type}/{print}', TicketController::class, 'print_qr');
 Route::get('ticket/group', [TicketController::class, 'detailGroup']);
 Route::get('ticket/group-last', [TicketController::class, 'detailGroupLast']);
+Route::post('tickets/print-qr', [TicketController::class, 'print_qr']);
