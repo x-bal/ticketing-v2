@@ -104,7 +104,7 @@
                     </div>
 
                     <div class="menu-header">Navigation</div>
-                    <div class="menu-item has-sub active">
+                    <div class="menu-item has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-pulse"></i>
@@ -122,6 +122,9 @@
                                 </a>
                                 <a href="{{ route('transactions.index') }}" class="menu-link">
                                     <div class="menu-text">Data Transaction</div>
+                                </a>
+                                <a href="{{ route('members.index') }}" class="menu-link">
+                                    <div class="menu-text">Data Member</div>
                                 </a>
                             </div>
                         </div>

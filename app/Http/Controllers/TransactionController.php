@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
-use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
 {
@@ -27,12 +27,13 @@ class TransactionController extends Controller
     public function get(Request $request)
     {
         if ($request->ajax()) {
-            $data = Transaction::get();
+            $data = Transaction::latest();
 
-            return DataTables::of($data)
+            return DataTables::eloquent($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '<a href="' . route("transactions.print", $row->id) . '" class="btn btn-sm btn-primary">Print</a> <a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('transactions.update', $row->id) . '" data-bs-toggle="modal">Edit</a> <button type="button" data-route="' . route('transactions.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    //<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('transactions.update', $row->id) . '" data-bs-toggle="modal">Edit</a>
+                    $actionBtn = '<a href="' . route("transactions.print", $row->id) . '" class="btn btn-sm btn-primary">Print</a> <button type="button" data-route="' . route('transactions.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
                     return $actionBtn;
                 })
                 ->addColumn('ticket', function ($row) {
@@ -68,7 +69,8 @@ class TransactionController extends Controller
             $transactions = [];
 
             $attr = $request->except('name', 'ticket', 'type_customer', 'print', 'jumlah');
-            $tipe = $request->type_customer;
+            // $tipe = $request->type_customer;
+            $tipe = 'group';
             $attr['ticket_id'] = $request->ticket;
             $attr['tipe'] = $tipe;
             $attr['nama_customer'] = $request->name;
@@ -91,7 +93,7 @@ class TransactionController extends Controller
                 $notrx = 1;
             }
 
-            if ($request->type_customer == 'individual') {
+            if ($tipe == 'individual') {
                 for ($i = 0; $i < $request->amount; $i++) {
                     $attr['no_trx'] = $notrx++;
                     $attr['ticket_code'] = 'TKT' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(1000, 9999);

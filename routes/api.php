@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\TicketController;
-use App\Http\Controllers\Api\TransactionController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\ApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,11 +19,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/transactions/no-trx', [TransactionController::class, 'getNoTrx']);
-Route::get('ticket/{ticket}/individu-check', [TransactionController::class, 'checkIndividualTicket']);
-Route::get('ticket/{ticket}/group-check', [TransactionController::class, 'checkGroupTicket']);
-Route::get('ticket/code', [TicketController::class, 'getCode']);
-Route::get('ticket/{id}/printQR', [TicketController::class, 'printQR']);
-Route::get('ticket/group', [TicketController::class, 'detailGroup']);
-Route::get('ticket/group-last', [TicketController::class, 'detailGroupLast']);
-Route::post('tickets/print-qr', [TicketController::class, 'print_qr']);
+Route::get('/transactions/no-trx', [ApiController::class, 'getNoTrx']);
+Route::get('ticket/check', [ApiController::class, 'check']);
+Route::get('ticket/{ticket}/individu-check', [ApiController::class, 'checkIndividualTicket']);
+Route::get('ticket/{ticket}/group-check', [ApiController::class, 'checkGroupTicket']);
+Route::get('ticket/code', [ApiController::class, 'getCode']);
+Route::get('ticket/{id}/printQR', [ApiController::class, 'printQR']);
+Route::get('ticket/group', [ApiController::class, 'detailGroup']);
+Route::get('ticket/group-last', [ApiController::class, 'detailGroupLast']);

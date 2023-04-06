@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\TicketController as ApiTicketController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -39,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::get('transactions/report', [TransactionController::class, 'report'])->name('transactions.report');
     Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
     Route::resource('transactions', TransactionController::class);
+
+    Route::get('members/get', [MemberController::class, 'get'])->name('members.list');
+    Route::resource('members', MemberController::class);
 });
 
 Route::get('/detail-group', [ApiTicketController::class, 'detailGroup']);
