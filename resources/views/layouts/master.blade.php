@@ -120,8 +120,8 @@
                                 <a href="{{ route('tickets.index') }}" class="menu-link">
                                     <div class="menu-text">Data Ticket</div>
                                 </a>
-                                <a href="{{ route('transactions.index') }}" class="menu-link">
-                                    <div class="menu-text">Data Transaction</div>
+                                <a href="{{ route('sewa.index') }}" class="menu-link">
+                                    <div class="menu-text">Data Sewa</div>
                                 </a>
                                 <a href="{{ route('members.index') }}" class="menu-link">
                                     <div class="menu-text">Data Member</div>
@@ -131,12 +131,36 @@
                     </div>
 
                     <div class="menu-item">
-                        <a href="{{ route('transactions.report') }}" class="menu-link">
+                        <a href="{{ route('transactions.index') }}" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-nutrition bg-blue"></i>
                             </div>
-                            <div class="menu-text">Report Transaction</div>
+                            <div class="menu-text">Data Transaction</div>
                         </a>
+
+                        <a href="{{ route('penyewaan.index') }}" class="menu-link">
+                            <div class="menu-icon">
+                                <i class="ion-ios-nutrition bg-blue"></i>
+                            </div>
+                            <div class="menu-text">Data Penyewaan</div>
+                        </a>
+                    </div>
+
+                    <div class="menu-item has-sub">
+                        <a href="javascript:;" class="menu-link">
+                            <div class="menu-icon">
+                                <i class="ion-ios-pulse"></i>
+                            </div>
+                            <div class="menu-text">Report</div>
+                            <div class="menu-caret"></div>
+                        </a>
+                        <div class="menu-submenu">
+                            <div class="menu-item">
+                                <a href="{{ route('transactions.report') }}" class="menu-link">
+                                    <div class="menu-text">Report Transaction</div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="menu-item d-flex">

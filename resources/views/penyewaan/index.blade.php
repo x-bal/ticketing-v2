@@ -18,20 +18,17 @@
     </div>
 
     <div class="panel-body">
-        <a href="#modal-dialog" id="btn-add" class="btn btn-primary mb-3" data-route="{{ route('transactions.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Transaction</a>
+        <a href="#modal-dialog" id="btn-add" class="btn btn-primary mb-3" data-route="{{ route('penyewaan.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Penyewaan</a>
 
         <table id="datatable" class="table table-striped table-bordered align-middle">
             <thead>
                 <tr>
                     <th class="text-nowrap">No</th>
-                    <th class="text-nowrap">No Trx</th>
-                    <th class="text-nowrap">Ticket Code</th>
-                    <th class="text-nowrap">Nama Customer</th>
-                    <th class="text-nowrap">Ticket</th>
+                    <th class="text-nowrap">Nama Penyewaan</th>
                     <th class="text-nowrap">Harga</th>
-                    <th class="text-nowrap">Jumlah</th>
+                    <th class="text-nowrap">Qty</th>
+                    <th class="text-nowrap">Metode</th>
                     <th class="text-nowrap">Total</th>
-                    <th class="text-nowrap">Status</th>
                     <th class="text-nowrap">Action</th>
                 </tr>
             </thead>
@@ -43,36 +40,18 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Form Transaction</h4>
+                    <h4 class="modal-title">Form Penyewaan</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                 </div>
-                <form action="" method="post" id="form-transaction">
+                <form action="" method="post" id="form-penyewaan">
                     @csrf
 
                     <div class="modal-body row">
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                <label for="no_trx">No Transaksi</label>
-                                <input type="number" name="no_trx" id="no_trx" class="form-control" readonly value="">
-
-                                @error('no_trx')
-                                <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="name">Name</label>
-                                <input type="text" name="name" id="name" class="form-control" value="">
-
-                                @error('name')
-                                <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="ticket">Ticket</label>
+                                <label for="sewa">Jenis Sewa</label>
                                 <select name="ticket" id="ticket" class="form-control">
-                                    <option disabled selected>-- Select Ticket --</option>
+                                    <option disabled selected>-- Select Penyewaan --</option>
                                     @foreach($tickets as $ticket)
                                     <option value="{{ $ticket->id }}" data-harga="{{ $ticket->harga }}">{{ $ticket->name }}</option>
                                     @endforeach
@@ -84,25 +63,14 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="amount">Jumlah</label>
-                                <input type="number" name="amount" id="amount" class="form-control" value="1">
+                                <label for="qty">Qty</label>
+                                <input type="number" name="qty" id="qty" class="form-control" value="1">
 
-                                @error('amount')
+                                @error('qty')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
 
-                            <div class="form-group mb-3">
-                                <label for="print">Jumlah Print</label>
-                                <input type="number" name="print" id="print" class="form-control" readonly value="1">
-
-                                @error('print')
-                                <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label for="harga_ticket">Harga Tiket</label>
                                 <input type="number" name="harga_ticket" id="harga_ticket" class="form-control" value="" readonly>
@@ -111,22 +79,15 @@
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label for="discount">Discount</label>
-                                <input type="number" name="discount" id="discount" class="form-control" value="0">
-
-                                @error('discount')
-                                <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
+                        <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label for="metode">Metode</label>
                                 <select name="metode" id="metode" class="form-control">
+                                    <option disabled selected>-- Pilih Metode --</option>
                                     <option value="cash">Cash</option>
-                                    <option value="debit">Debit</option>
-                                    <option value="lain-lain">Lain-lain</option>
+                                    <option value="tap">Emoney</option>
                                 </select>
 
                                 @error('metode')
@@ -135,25 +96,14 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="cash">Cash</label>
-                                <input type="number" name="cash" id="cash" class="form-control" value="">
+                                <label for="name">Name</label>
+                                <input type="text" name="name" id="name" class="form-control" value="" readonly>
 
-                                @error('cash')
+                                @error('name')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
 
-                            <div class="form-group mb-3">
-                                <label for="kembalian">Kembalian</label>
-                                <input type="number" name="kembalian" id="kembalian" class="form-control" value="0" readonly>
-
-                                @error('kembalian')
-                                <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
                             <div class="form-group mb-3">
                                 <label for="jumlah">Jumlah</label>
                                 <input type="number" name="jumlah" id="jumlah" class="form-control" value="0" readonly>
@@ -163,8 +113,8 @@
                                 @enderror
                             </div>
                         </div>
-
                     </div>
+
                     <div class="modal-footer">
                         <a href="javascript:;" id="btn-close" class="btn btn-white" data-bs-dismiss="modal">Close</a>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -192,7 +142,7 @@
             processing: true,
             serverSide: true,
             responsive: true,
-            ajax: "{{ route('transactions.list') }}",
+            ajax: "{{ route('penyewaan.list') }}",
             deferRender: true,
             pagination: true,
             columns: [{
@@ -200,18 +150,6 @@
                     name: 'DT_RowIndex',
                     sortable: false,
                     searchable: false
-                },
-                {
-                    data: 'no_trx',
-                    name: 'no_trx'
-                },
-                {
-                    data: 'ticket_code',
-                    name: 'ticket_code'
-                },
-                {
-                    data: 'nama_customer',
-                    name: 'nama_customer'
                 },
                 {
                     data: 'ticket',
@@ -222,16 +160,16 @@
                     name: 'harga'
                 },
                 {
-                    data: 'amount',
-                    name: 'amount'
+                    data: 'qty',
+                    name: 'qty'
                 },
                 {
-                    data: 'harga_ticket',
-                    name: 'harga_ticket'
+                    data: 'metode',
+                    name: 'metode'
                 },
                 {
-                    data: 'status',
-                    name: 'status'
+                    data: 'jumlah',
+                    name: 'jumlah'
                 },
                 {
                     data: 'action',
@@ -242,19 +180,19 @@
 
         $("#btn-add").on('click', function() {
             let route = $(this).attr('data-route')
-            $("#form-transaction").attr('action', route)
+            $("#form-penyewaan").attr('action', route)
         })
 
         $("#btn-close").on('click', function() {
-            $("#form-transaction").removeAttr('action')
+            $("#form-penyewaan").removeAttr('action')
         })
 
         $("#datatable").on('click', '.btn-edit', function() {
             let route = $(this).attr('data-route')
             let id = $(this).attr('id')
 
-            $("#form-transaction").attr('action', route)
-            $("#form-transaction").append(`<input type="hidden" name="_method" value="PUT">`);
+            $("#form-penyewaan").attr('action', route)
+            $("#form-penyewaan").append(`<input type="hidden" name="_method" value="PUT">`);
 
             $.ajax({
                 url: "/tickets/" + id,
@@ -275,8 +213,8 @@
             $("#form-delete").attr('action', route)
 
             swal({
-                title: 'Hapus data transaction?',
-                text: 'Menghapus transaction bersifat permanen.',
+                title: 'Hapus data penyewaan?',
+                text: 'Menghapus penyewaan bersifat permanen.',
                 icon: 'error',
                 buttons: {
                     cancel: {
@@ -306,51 +244,50 @@
 
     <script>
         $(document).ready(function() {
-            $("#btn-add").on('click', function() {
-                $.ajax({
-                    url: '/api/transactions/no-trx',
-                    type: "GET",
-                    method: "GET",
-                    success: function(response) {
-                        $("#no_trx").val(response.no_trx)
-                    }
-                })
+            // $("#btn-add").on('click', function() {
+            //     $.ajax({
+            //         url: '/api/penyewaan/no-trx',
+            //         type: "GET",
+            //         method: "GET",
+            //         success: function(response) {
+            //             $("#no_trx").val(response.no_trx)
+            //         }
+            //     })
 
-                $("#name").attr("autofocus", "autofocus")
-            })
+            //     $("#name").attr("autofocus", "autofocus")
+            // })
 
             $("#ticket").on('change', function() {
                 let element = $(this).find('option:selected');
                 let harga = element.attr("data-harga");
-                let amount = $("#amount").val();
-                let discount = $("#discount").val()
+                let amount = $("#qty").val();
                 let harga_ticket = harga * amount;
-                let jumlah = (harga * amount) - discount;
+                let jumlah = (harga * amount);
 
                 $("#harga_ticket").val(harga_ticket)
                 $("#jumlah").val(jumlah)
                 $("#cash").val(jumlah)
             })
 
-            $("#amount").on('change', function() {
+            $("#metode").on('change', function() {
+                let metode = $(this).val()
+                if (metode == 'tap') {
+                    $("#name").removeAttr('readonly');
+                } else {
+                    $("#name").attr("readonly", "readonly")
+                }
+            })
+
+            $("#qty").on('change', function() {
                 let amount = $(this).val();
                 let harga = $('#ticket option:selected').attr('data-harga');
-                let type = $('#type_customer option:selected').val();
-                let discount = $("#discount").val()
                 let harga_ticket = harga * amount;
-                $("#print").val(amount)
 
-                // if (type == 'group') {
-                let jumlah = (harga * amount) - discount;
-                $("#harga_ticket").val(harga_ticket)
+                console.log(harga_ticket)
+                let jumlah = (harga * amount);
+                // $("#harga_ticket").val(harga_ticket)
                 $("#jumlah").val(jumlah)
                 $("#cash").val(jumlah)
-                // } else {
-                //     let jumlah = harga - discount;
-                //     $("#harga_ticket").val(harga)
-                //     $("#jumlah").val(jumlah)
-                //     $("#cash").val(jumlah)
-                // }
 
             })
 
@@ -364,26 +301,60 @@
                 $("#cash").val(jumlah)
             })
 
-            $("#type_customer").on('change', function() {
-                let type = $(this).val();
+            // $("#type_customer").on('change', function() {
+            //     let type = $(this).val();
 
-                // if (type == 'group') {
-                //     $("#print").removeAttr('readonly')
-                // } else {
-                //     $("#amount").val(1)
-                //     $("#print").val(1)
-                //     $("#print").attr('readonly', 'readonly')
-                // }
-            })
+            // if (type == 'group') {
+            //     $("#print").removeAttr('readonly')
+            // } else {
+            //     $("#amount").val(1)
+            //     $("#print").val(1)
+            //     $("#print").attr('readonly', 'readonly')
+            // }
+            // })
 
-            $("#metode").on('change', function() {
-                let metode = $(this).val();
+            // $("#metode").on('change', function() {
+            //     let metode = $(this).val();
 
-                if (metode != 'cash') {
-                    $("#cash").val(0);
-                    $("#cash").attr('readonly', 'readonly')
-                } else {
-                    $("#cash").removeAttr('readonly')
+            //     if (metode != 'cash') {
+            //         $("#cash").val(0);
+            //         $("#cash").attr('readonly', 'readonly')
+            //     } else {
+            //         $("#cash").removeAttr('readonly')
+            //     }
+            // })
+
+            $('#form-penyewaan').on('keyup keypress', function(e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode === 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            $("#name").on('keypress', function(e) {
+                if (e.which == 13) {
+                    let rfid = $(this).val();
+
+                    $.ajax({
+                        url: "/api/members",
+                        type: "GET",
+                        method: "GET",
+                        data: {
+                            rfid: rfid
+                        },
+                        success: function(response) {
+                            if (response.status == 'success') {
+                                let member = response.member;
+                                $('#form-penyewaan').submit()
+                            }
+
+                            $("#rfid").val("")
+                        },
+                        error: function(response) {
+                            $("#rfid").val("")
+                        }
+                    })
                 }
             })
         })

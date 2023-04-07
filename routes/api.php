@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\MemberController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,3 +28,4 @@ Route::get('ticket/code', [ApiController::class, 'getCode']);
 Route::get('ticket/{id}/printQR', [ApiController::class, 'printQR']);
 Route::get('ticket/group', [ApiController::class, 'detailGroup']);
 Route::get('ticket/group-last', [ApiController::class, 'detailGroupLast']);
+Route::get('/members', [MemberController::class, 'findOne']);

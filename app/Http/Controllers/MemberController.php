@@ -39,17 +39,6 @@ class MemberController extends Controller
         }
     }
 
-    public function create()
-    {
-        $title = 'Add Member';
-        $breadcrumbs = ['Master', 'Add Member'];
-        $action = route('members.store');
-        $method = 'POST';
-        $member = new Member();
-
-        return view('member.form', compact('title', 'breadcrumbs', 'action', 'method', 'Member'));
-    }
-
     public function store(CreateMemberRequest $request)
     {
         try {
@@ -112,6 +101,22 @@ class MemberController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function findOne(Request $request)
+    {
+        $member = Member::where('rfid', $request->rfid)->first();
+
+        if ($member) {
+            return response()->json([
+                'status' => 'success',
+                'member' => $member
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+            ]);
         }
     }
 }
