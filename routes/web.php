@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\TicketController as ApiTicketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PenyewaanController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SewaController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
@@ -51,6 +53,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('penyewaan/get', [PenyewaanController::class, 'get'])->name('penyewaan.list');
     Route::resource('penyewaan', PenyewaanController::class);
+
+    Route::get('roles/get', [RoleController::class, 'get'])->name('roles.list');
+    Route::resource('roles', RoleController::class);
+
+    Route::get('permissions/get', [PermissionController::class, 'get'])->name('permissions.list');
+    Route::resource('permissions', PermissionController::class);
 });
 
 Route::get('/detail-group', [ApiTicketController::class, 'detailGroup']);
