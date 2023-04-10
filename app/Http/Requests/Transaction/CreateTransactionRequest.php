@@ -24,19 +24,19 @@ class CreateTransactionRequest extends FormRequest
     public function rules()
     {
         return [
-            'no_trx' => 'required|numeric',
-            'name' => 'required|string',
-            'name' => 'required|string',
-            'ticket' => 'required|numeric',
-            'type_customer' => 'required|string',
-            'amount' => 'required|numeric',
-            'print' => 'required|numeric',
-            'harga_ticket' => 'required|numeric',
-            'discount' => 'required|numeric',
-            'metode' => 'required|string',
-            'cash' => 'required|numeric',
-            'kembalian' => 'required|numeric',
-            'jumlah' => 'required|numeric',
+            // 'no_trx' => 'required|numeric',
+            // 'name' => 'required|string',
+            // 'name' => 'required|string',
+            // 'ticket' => 'required|numeric',
+            // 'type_customer' => 'required|string',
+            // 'amount' => 'required|numeric',
+            // 'print' => 'required|numeric',
+            // 'harga_ticket' => 'required|numeric',
+            // 'discount' => 'required|numeric',
+            // 'metode' => 'required|string',
+            // 'cash' => 'required|numeric',
+            // 'kembalian' => 'required|numeric',
+            // 'jumlah' => 'required|numeric',
         ];
     }
 }
