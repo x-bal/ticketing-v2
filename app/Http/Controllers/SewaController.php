@@ -9,6 +9,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SewaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:sewa-access');
+    }
+
     public function index()
     {
         $title = 'Data Sewa';

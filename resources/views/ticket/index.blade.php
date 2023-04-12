@@ -18,7 +18,7 @@
     </div>
 
     <div class="panel-body">
-        <a href="#modal-dialog" id="btn-add" class="btn btn-primary mb-3" data-route="{{ route('tickets.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Ticket</a>
+        <a href="{{ route('tickets.create') }}" class="btn btn-primary mb-3"><i class="ion-ios-add"></i> Add Ticket</a>
 
         <table id="datatable" class="table table-striped table-bordered align-middle">
             <thead>
@@ -26,6 +26,8 @@
                     <th class="text-nowrap">No</th>
                     <th class="text-nowrap">Name</th>
                     <th class="text-nowrap">Harga</th>
+                    <th class="text-nowrap">Jenis</th>
+                    <th class="text-nowrap">Tripod Id</th>
                     <th class="text-nowrap">Action</th>
                 </tr>
             </thead>
@@ -103,6 +105,14 @@
                 {
                     data: 'harga',
                     name: 'harga'
+                },
+                {
+                    data: 'jenis',
+                    name: 'jenis'
+                },
+                {
+                    data: 'tripod',
+                    name: 'tripod'
                 },
                 {
                     data: 'action',

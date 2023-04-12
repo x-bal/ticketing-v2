@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Ticket\TicketRequest;
+use App\Models\JenisTicket;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -11,6 +12,11 @@ use Yajra\DataTables\DataTables;
 
 class TicketController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:ticket-access');
+    }
+
     public function index()
     {
         $title = 'Data Ticket';
@@ -26,12 +32,16 @@ class TicketController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $actionBtn = '<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('tickets.update', $row->id) . '" data-bs-toggle="modal">Edit</a> <button type="button" data-route="' . route('tickets.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                ->editColumn('action', function ($row) {
+                    $actionBtn = '<a href="' . route('tickets.show', $row->id) . '" class="btn btn-sm btn-info btn-edit">Detail</a> <a href="' . route('tickets.update', $row->id) . '" class="btn btn-sm btn-success btn-edit">Edit</a> <button type="button" data-route="' . route('tickets.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+
                     return $actionBtn;
                 })
                 ->editColumn('harga', function ($row) {
                     return 'Rp. ' . number_format($row->harga, 0, ',', '.');
+                })
+                ->editColumn('jenis', function ($row) {
+                    return $row->jenis->nama_jenis;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -45,16 +55,29 @@ class TicketController extends Controller
         $action = route('tickets.store');
         $method = 'POST';
         $ticket = new Ticket();
+        $jenis = JenisTicket::get();
 
-        return view('ticket.form', compact('title', 'breadcrumbs', 'action', 'method', 'ticket'));
+        return view('ticket.form', compact('title', 'breadcrumbs', 'action', 'method', 'ticket', 'jenis'));
     }
 
-    public function store(TicketRequest $request)
+    public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string',
+            'harga' => 'required|numeric',
+            'jenis' => 'required|numeric',
+            'tripod' => 'required|numeric|unique:tickets',
+        ]);
+
         try {
             DB::beginTransaction();
 
-            $ticket = Ticket::create($request->all());
+            $ticket = Ticket::create([
+                'name' => $request->name,
+                'harga' => $request->harga,
+                'jenis_ticket_id' => $request->jenis,
+                'tripod' => $request->tripod,
+            ]);
 
             DB::commit();
 
@@ -67,10 +90,12 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
-        return response()->json([
-            'status' => 'success',
-            'ticket' => $ticket
-        ], 200);
+        $title = 'Data Ticket';
+        $breadcrumbs = ['Master', 'Data Ticket'];
+        $action = 'asd';
+        $method = 'post';
+
+        return view('ticket.show', compact('ticket', 'title', 'breadcrumbs', 'action', 'method'));
     }
 
     public function edit(Ticket $ticket)
@@ -85,10 +110,23 @@ class TicketController extends Controller
 
     public function update(TicketRequest $request, Ticket $ticket)
     {
+        $request->validate([
+            'name' => 'required|string',
+            'harga' => 'required|numeric',
+            'jenis' => 'required|numeric',
+            'tripod' => 'required|numeric|unique:tickets,tripod,' . $ticket->id,
+        ]);
+
+
         try {
             DB::beginTransaction();
 
-            $ticket->update($request->all());
+            $ticket->update([
+                'name' => $request->name,
+                'harga' => $request->harga,
+                'jenis_ticket_id' => $request->jenis,
+                'tripod' => $request->tripod,
+            ]);
 
             DB::commit();
 
@@ -113,5 +151,13 @@ class TicketController extends Controller
             DB::rollBack();
             return back()->with('error', $th->getMessage());
         }
+    }
+
+    public function find(Ticket $ticket)
+    {
+        return response()->json([
+            'status' => 'success',
+            'ticket' => $ticket
+        ], 200);
     }
 }

@@ -18,14 +18,12 @@
     </div>
 
     <div class="panel-body">
-        <a href="#modal-dialog" id="btn-add" class="btn btn-primary mb-3" data-route="{{ route('permissions.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Permission</a>
 
         <table id="datatable" class="table table-striped table-bordered align-middle">
             <thead>
                 <tr>
                     <th class="text-nowrap">No</th>
                     <th class="text-nowrap">Name</th>
-                    <th class="text-nowrap">Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -91,10 +89,6 @@
                 {
                     data: 'name',
                     name: 'name'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
                 },
             ]
         });

@@ -18,7 +18,7 @@
     </div>
 
     <div class="panel-body">
-        <a href="#modal-dialog" id="btn-add" class="btn btn-primary mb-3" data-route="{{ route('transactions.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Transaction</a>
+        <a href="{{ route('transactions.create') }}" class="btn btn-primary mb-3"><i class="ion-ios-add"></i> Add Transaction</a>
 
         <table id="datatable" class="table table-striped table-bordered align-middle">
             <thead>
@@ -26,7 +26,6 @@
                     <th class="text-nowrap">No</th>
                     <th class="text-nowrap">No Trx</th>
                     <th class="text-nowrap">Ticket Code</th>
-                    <th class="text-nowrap">Nama Customer</th>
                     <th class="text-nowrap">Ticket</th>
                     <th class="text-nowrap">Harga</th>
                     <th class="text-nowrap">Jumlah</th>
@@ -178,214 +177,211 @@
         @csrf
         @method('DELETE')
     </form>
-    @endsection
+</div>
+@endsection
 
-    @push('script')
-    <script src="{{ asset('/') }}plugins/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="{{ asset('/') }}plugins/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="{{ asset('/') }}plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="{{ asset('/') }}plugins/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
-    <script src="{{ asset('/') }}plugins/sweetalert/dist/sweetalert.min.js"></script>
+@push('script')
+<script src="{{ asset('/') }}plugins/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<script src="{{ asset('/') }}plugins/sweetalert/dist/sweetalert.min.js"></script>
 
-    <script>
-        var table = $('#datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            responsive: true,
-            ajax: "{{ route('transactions.list') }}",
-            deferRender: true,
-            pagination: true,
-            columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    sortable: false,
-                    searchable: false
+<script>
+    var table = $('#datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        responsive: true,
+        ajax: "{{ route('transactions.list') }}",
+        deferRender: true,
+        pagination: true,
+        columns: [{
+                data: 'DT_RowIndex',
+                name: 'DT_RowIndex',
+                sortable: false,
+                searchable: false
+            },
+            {
+                data: 'no_trx',
+                name: 'no_trx'
+            },
+            {
+                data: 'ticket_code',
+                name: 'ticket_code'
+            },
+            {
+                data: 'ticket',
+                name: 'ticket'
+            },
+            {
+                data: 'harga',
+                name: 'harga'
+            },
+            {
+                data: 'amount',
+                name: 'amount'
+            },
+            {
+                data: 'harga_ticket',
+                name: 'harga_ticket'
+            },
+            {
+                data: 'status',
+                name: 'status'
+            },
+            {
+                data: 'action',
+                name: 'action',
+            },
+        ]
+    });
+
+    $("#btn-add").on('click', function() {
+        let route = $(this).attr('data-route')
+        $("#form-transaction").attr('action', route)
+    })
+
+    $("#btn-close").on('click', function() {
+        $("#form-transaction").removeAttr('action')
+    })
+
+    $("#datatable").on('click', '.btn-edit', function() {
+        let route = $(this).attr('data-route')
+        let id = $(this).attr('id')
+
+        $("#form-transaction").attr('action', route)
+        $("#form-transaction").append(`<input type="hidden" name="_method" value="PUT">`);
+
+        $.ajax({
+            url: "/tickets/" + id,
+            type: 'GET',
+            method: 'GET',
+            success: function(response) {
+                let ticket = response.ticket;
+
+                $("#name").val(ticket.name)
+                $("#harga").val(ticket.harga)
+            }
+        })
+    })
+
+    $("#datatable").on('click', '.btn-delete', function(e) {
+        e.preventDefault();
+        let route = $(this).attr('data-route')
+        $("#form-delete").attr('action', route)
+
+        swal({
+            title: 'Hapus data transaction?',
+            text: 'Menghapus transaction bersifat permanen.',
+            icon: 'error',
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
                 },
-                {
-                    data: 'no_trx',
-                    name: 'no_trx'
-                },
-                {
-                    data: 'ticket_code',
-                    name: 'ticket_code'
-                },
-                {
-                    data: 'nama_customer',
-                    name: 'nama_customer'
-                },
-                {
-                    data: 'ticket',
-                    name: 'ticket'
-                },
-                {
-                    data: 'harga',
-                    name: 'harga'
-                },
-                {
-                    data: 'amount',
-                    name: 'amount'
-                },
-                {
-                    data: 'harga_ticket',
-                    name: 'harga_ticket'
-                },
-                {
-                    data: 'status',
-                    name: 'status'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                },
-            ]
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-danger',
+                    closeModal: true
+                }
+            }
+        }).then((result) => {
+            if (result) {
+                $("#form-delete").submit()
+            } else {
+                $("#form-delete").attr('action', '')
+            }
         });
+    })
+</script>
 
+<script>
+    $(document).ready(function() {
         $("#btn-add").on('click', function() {
-            let route = $(this).attr('data-route')
-            $("#form-transaction").attr('action', route)
-        })
-
-        $("#btn-close").on('click', function() {
-            $("#form-transaction").removeAttr('action')
-        })
-
-        $("#datatable").on('click', '.btn-edit', function() {
-            let route = $(this).attr('data-route')
-            let id = $(this).attr('id')
-
-            $("#form-transaction").attr('action', route)
-            $("#form-transaction").append(`<input type="hidden" name="_method" value="PUT">`);
-
             $.ajax({
-                url: "/tickets/" + id,
-                type: 'GET',
-                method: 'GET',
+                url: '/api/transactions/no-trx',
+                type: "GET",
+                method: "GET",
                 success: function(response) {
-                    let ticket = response.ticket;
-
-                    $("#name").val(ticket.name)
-                    $("#harga").val(ticket.harga)
+                    $("#no_trx").val(response.no_trx)
                 }
             })
+
+            $("#name").attr("autofocus", "autofocus")
         })
 
-        $("#datatable").on('click', '.btn-delete', function(e) {
-            e.preventDefault();
-            let route = $(this).attr('data-route')
-            $("#form-delete").attr('action', route)
+        $("#ticket").on('change', function() {
+            let element = $(this).find('option:selected');
+            let harga = element.attr("data-harga");
+            let amount = $("#amount").val();
+            let discount = $("#discount").val()
+            let harga_ticket = harga * amount;
+            let jumlah = (harga * amount) - discount;
 
-            swal({
-                title: 'Hapus data transaction?',
-                text: 'Menghapus transaction bersifat permanen.',
-                icon: 'error',
-                buttons: {
-                    cancel: {
-                        text: 'Cancel',
-                        value: null,
-                        visible: true,
-                        className: 'btn btn-default',
-                        closeModal: true,
-                    },
-                    confirm: {
-                        text: 'Yes',
-                        value: true,
-                        visible: true,
-                        className: 'btn btn-danger',
-                        closeModal: true
-                    }
-                }
-            }).then((result) => {
-                if (result) {
-                    $("#form-delete").submit()
-                } else {
-                    $("#form-delete").attr('action', '')
-                }
-            });
+            $("#harga_ticket").val(harga_ticket)
+            $("#jumlah").val(jumlah)
+            $("#cash").val(jumlah)
         })
-    </script>
 
-    <script>
-        $(document).ready(function() {
-            $("#btn-add").on('click', function() {
-                $.ajax({
-                    url: '/api/transactions/no-trx',
-                    type: "GET",
-                    method: "GET",
-                    success: function(response) {
-                        $("#no_trx").val(response.no_trx)
-                    }
-                })
+        $("#amount").on('change', function() {
+            let amount = $(this).val();
+            let harga = $('#ticket option:selected').attr('data-harga');
+            let type = $('#type_customer option:selected').val();
+            let discount = $("#discount").val()
+            let harga_ticket = harga * amount;
+            $("#print").val(amount)
 
-                $("#name").attr("autofocus", "autofocus")
-            })
+            // if (type == 'group') {
+            let jumlah = (harga * amount) - discount;
+            $("#harga_ticket").val(harga_ticket)
+            $("#jumlah").val(jumlah)
+            $("#cash").val(jumlah)
+            // } else {
+            //     let jumlah = harga - discount;
+            //     $("#harga_ticket").val(harga)
+            //     $("#jumlah").val(jumlah)
+            //     $("#cash").val(jumlah)
+            // }
 
-            $("#ticket").on('change', function() {
-                let element = $(this).find('option:selected');
-                let harga = element.attr("data-harga");
-                let amount = $("#amount").val();
-                let discount = $("#discount").val()
-                let harga_ticket = harga * amount;
-                let jumlah = (harga * amount) - discount;
-
-                $("#harga_ticket").val(harga_ticket)
-                $("#jumlah").val(jumlah)
-                $("#cash").val(jumlah)
-            })
-
-            $("#amount").on('change', function() {
-                let amount = $(this).val();
-                let harga = $('#ticket option:selected').attr('data-harga');
-                let type = $('#type_customer option:selected').val();
-                let discount = $("#discount").val()
-                let harga_ticket = harga * amount;
-                $("#print").val(amount)
-
-                // if (type == 'group') {
-                let jumlah = (harga * amount) - discount;
-                $("#harga_ticket").val(harga_ticket)
-                $("#jumlah").val(jumlah)
-                $("#cash").val(jumlah)
-                // } else {
-                //     let jumlah = harga - discount;
-                //     $("#harga_ticket").val(harga)
-                //     $("#jumlah").val(jumlah)
-                //     $("#cash").val(jumlah)
-                // }
-
-            })
-
-            $("#discount").on('change', function() {
-                let discount = $(this).val();
-                let harga = $("#harga_ticket").val();
-                let jumlah = harga - discount;
-
-                $("#jumlah").val("")
-                $("#jumlah").val(jumlah)
-                $("#cash").val(jumlah)
-            })
-
-            $("#type_customer").on('change', function() {
-                let type = $(this).val();
-
-                // if (type == 'group') {
-                //     $("#print").removeAttr('readonly')
-                // } else {
-                //     $("#amount").val(1)
-                //     $("#print").val(1)
-                //     $("#print").attr('readonly', 'readonly')
-                // }
-            })
-
-            $("#metode").on('change', function() {
-                let metode = $(this).val();
-
-                if (metode != 'cash') {
-                    $("#cash").val(0);
-                    $("#cash").attr('readonly', 'readonly')
-                } else {
-                    $("#cash").removeAttr('readonly')
-                }
-            })
         })
-    </script>
-    @endpush
+
+        $("#discount").on('change', function() {
+            let discount = $(this).val();
+            let harga = $("#harga_ticket").val();
+            let jumlah = harga - discount;
+
+            $("#jumlah").val("")
+            $("#jumlah").val(jumlah)
+            $("#cash").val(jumlah)
+        })
+
+        $("#type_customer").on('change', function() {
+            let type = $(this).val();
+
+            // if (type == 'group') {
+            //     $("#print").removeAttr('readonly')
+            // } else {
+            //     $("#amount").val(1)
+            //     $("#print").val(1)
+            //     $("#print").attr('readonly', 'readonly')
+            // }
+        })
+
+        $("#metode").on('change', function() {
+            let metode = $(this).val();
+
+            if (metode != 'cash') {
+                $("#cash").val(0);
+                $("#cash").attr('readonly', 'readonly')
+            } else {
+                $("#cash").removeAttr('readonly')
+            }
+        })
+    })
+</script>
+@endpush

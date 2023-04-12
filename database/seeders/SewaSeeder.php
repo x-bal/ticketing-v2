@@ -19,9 +19,6 @@ class SewaSeeder extends Seeder
             ["name" =>  "Sewa Baju Renang", "harga" => 10000],
             ["name" =>  "Sewa Pelampung", "harga" => 10000],
             ["name" =>  "Sewa Tikar", "harga" => 10000],
-            ["name" =>  "Parkir Mobil", "harga" => 5000],
-            ["name" =>  "Parkir Motor", "harga" => 2000],
-            ["name" =>  "Asuransi Jasa Raharja", "harga" => 2000],
         ];
 
         foreach ($tickets as $ticket) {

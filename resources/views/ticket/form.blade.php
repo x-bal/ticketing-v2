@@ -39,6 +39,29 @@
                 @enderror
             </div>
 
+            <div class="form-group mb-3">
+                <label for="jenis">Jenis</label>
+                <select name="jenis" id="jenis" class="form-control">
+                    <option disabled selected>-- Select Jenis --</option>
+                    @foreach($jenis as $jns)
+                    <option value="{{ $jns->id }}">{{ $jns->nama_jenis }}</option>
+                    @endforeach
+                </select>
+
+                @error('jenis')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="tripod">Tripod Id</label>
+                <input type="number" name="tripod" id="tripod" class="form-control" value="{{ $ticket->tripod ?? old('tripod') }}">
+
+                @error('tripod')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>

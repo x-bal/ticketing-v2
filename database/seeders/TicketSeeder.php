@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\JenisTicket;
 use App\Models\Ticket;
 use Illuminate\Database\Seeder;
 
@@ -14,26 +15,41 @@ class TicketSeeder extends Seeder
      */
     public function run()
     {
+        JenisTicket::create([
+            'nama_jenis' => 'Reguler'
+        ]);
+
+        JenisTicket::create([
+            'nama_jenis' => 'Terusan'
+        ]);
+
         $tickets = [
-            ["name" =>  "HTM Reguler Weekday", "harga" => 20000],
-            ["name" =>  "HTM Reguler Weekend", "harga" => 30000],
-            ["name" =>  "HTM Terusan Weekday", "harga" => 40000],
-            ["name" =>  "HTM Terusan Weekend", "harga" => 50000],
-            ["name" =>  "HTM Group Character Building", "harga" => 70000],
-            ["name" =>  "HTM Olahraga Sekolah", "harga" => 15000],
-            ["name" =>  "HTM Club Renang", "harga" => 15000],
-            ["name" =>  "Tiket Balon Udara", "harga" => 10000],
-            ["name" =>  "Tiket Adrenaline Swing", "harga" => 10000],
-            ["name" =>  "Tiket Sepeda Terbang", "harga" => 10000],
-            ["name" =>  "HTM Rainbow Slider", "harga" => 35000],
-            ["name" =>  "HTM Kereta", "harga" => 25000],
-            ["name" =>  "HTM Adrenaline Slider Air Terjun", "harga" => 25000],
+            ["name" =>  "HTM Reguler Weekday", "harga" => 20000, 'jenis_ticket_id' => 1],
+            ["name" =>  "HTM Reguler Weekend", "harga" => 30000, 'jenis_ticket_id' => 1],
+            ["name" =>  "HTM Terusan Weekday", "harga" => 40000, 'jenis_ticket_id' => 2],
+            ["name" =>  "HTM Terusan Weekend", "harga" => 50000, 'jenis_ticket_id' => 2],
+            ["name" =>  "HTM Group Character Building", "harga" => 70000, 'jenis_ticket_id' => 1],
+            ["name" =>  "HTM Olahraga Sekolah", "harga" => 15000, 'jenis_ticket_id' => 1],
+            ["name" =>  "HTM Club Renang", "harga" => 15000, 'jenis_ticket_id' => 1],
+            ["name" =>  "Tiket Balon Udara", "harga" => 10000, 'jenis_ticket_id' => 1],
+            ["name" =>  "Tiket Adrenaline Swing", "harga" => 10000, 'jenis_ticket_id' => 1],
+            ["name" =>  "Tiket Sepeda Terbang", "harga" => 10000, 'jenis_ticket_id' => 1],
+            ["name" =>  "HTM Rainbow Slider", "harga" => 35000, 'jenis_ticket_id' => 1],
+            ["name" =>  "HTM Kereta", "harga" => 25000, 'jenis_ticket_id' => 1],
+            ["name" =>  "HTM Adrenaline Slider Air Terjun", "harga" => 25000, 'jenis_ticket_id' => 1],
+            ["name" =>  "Parkir Mobil", "harga" => 5000, 'jenis_ticket_id' => 1],
+            ["name" =>  "Parkir Motor", "harga" => 2000, 'jenis_ticket_id' => 1],
+            ["name" =>  "Asuransi Jasa Raharja", "harga" => 2000, 'jenis_ticket_id' => 1],
         ];
+
+        $no = 1;
 
         foreach ($tickets as $ticket) {
             Ticket::create([
                 'name' => $ticket['name'],
                 'harga' => $ticket['harga'],
+                'jenis_ticket_id' => $ticket['jenis_ticket_id'],
+                'tripod' => $no++
             ]);
         }
     }

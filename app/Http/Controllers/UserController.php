@@ -8,6 +8,11 @@ use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:user-access');
+    }
+
     public function index()
     {
         $title = 'Data User';

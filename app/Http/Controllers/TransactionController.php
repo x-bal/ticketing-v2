@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Exports\ReportExport;
 use App\Http\Requests\Transaction\CreateTransactionRequest;
+use App\Models\DetailTransaction;
+use App\Models\Sewa;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -15,6 +17,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:transaction-access');
+    }
+
     public function index()
     {
         $title = 'Data Transaction';
@@ -27,7 +34,7 @@ class TransactionController extends Controller
     public function get(Request $request)
     {
         if ($request->ajax()) {
-            $data = Transaction::latest();
+            $data = Transaction::where('is_active', 1)->orderBy('no_trx', 'DESC');
 
             return DataTables::eloquent($data)
                 ->addIndexColumn()
@@ -43,7 +50,7 @@ class TransactionController extends Controller
                     return 'Rp. ' . number_format($row->ticket->harga, 0, ',', '.');
                 })
                 ->editColumn('harga_ticket', function ($row) {
-                    return 'Rp. ' . number_format($row->harga_ticket, 0, ',', '.');
+                    return 'Rp. ' . number_format($row->detail()->sum('total'), 0, ',', '.');
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -56,9 +63,42 @@ class TransactionController extends Controller
         $breadcrumbs = ['Master', 'Add Transaction'];
         $action = route('transactions.store');
         $method = 'POST';
-        $transaction = new Transaction();
 
-        return view('transaction.form', compact('title', 'breadcrumbs', 'action', 'method', 'transaction'));
+        if (request('tipe') == 'sewa') {
+            $tickets = Sewa::get();
+        } else {
+            $tickets = Ticket::get();
+        }
+
+        $now = Carbon::now()->format('Y-m-d');
+        $lastTrx = Transaction::whereDate('created_at', $now)->latest()->first();
+        if ($lastTrx) {
+            $notrx = $lastTrx->no_trx + 1;
+        } else {
+            $notrx = 1;
+        }
+
+        $active = Transaction::whereDate('created_at', $now)->where('is_active', 0)->latest()->first();
+        if ($active) {
+            $transaction = $active;
+        } else {
+            $transaction = Transaction::create([
+                'ticket_id' => 0,
+                'user_id' => auth()->user()->id,
+                'no_trx' => $notrx,
+                'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(100, 999)
+            ]);
+
+            DetailTransaction::create([
+                'transaction_id' => $transaction->id,
+                'ticket_id' => 16,
+                'qty' => 1,
+                'total' => Ticket::find(16)->harga
+            ]);
+        }
+
+
+        return view('transaction.form', compact('title', 'breadcrumbs', 'action', 'method', 'transaction', 'tickets'));
     }
 
     public function store(CreateTransactionRequest $request)

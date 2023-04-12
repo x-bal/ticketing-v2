@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Api\TicketController as ApiTicketController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DetailTransactionController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PenyewaanController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SewaController;
+use App\Http\Controllers\TerusanController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -37,7 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
 
     Route::get('tickets/get', [TicketController::class, 'get'])->name('tickets.list');
+    Route::get('tickets/find/{ticket:id}', [TicketController::class, 'find'])->name('tickets.find');
     Route::resource('tickets', TicketController::class);
+
+    Route::resource('terusan', TerusanController::class);
 
     Route::get('sewa/get', [SewaController::class, 'get'])->name('sewa.list');
     Route::resource('sewa', SewaController::class);
@@ -47,9 +52,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('transactions/get', [TransactionController::class, 'get'])->name('transactions.list');
     Route::get('transactions/{transaction:id}/print', [TransactionController::class, 'print'])->name('transactions.print');
+    Route::get('transaction/create', [DetailTransactionController::class, 'store']);
     Route::get('report/transactions', [TransactionController::class, 'report'])->name('transactions.report');
     Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
     Route::resource('transactions', TransactionController::class);
+
+    Route::get('detail/{id}/list', [DetailTransactionController::class, 'index'])->name('detail.list');
+    Route::delete('detail/{detailTransaction:id}', [DetailTransactionController::class, 'destroy'])->name('detail.destroy');
+    Route::get('detail/{id}/save', [DetailTransactionController::class, 'save'])->name('detail.save');
 
     Route::get('penyewaan/get', [PenyewaanController::class, 'get'])->name('penyewaan.list');
     Route::resource('penyewaan', PenyewaanController::class);

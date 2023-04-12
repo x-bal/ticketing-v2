@@ -104,6 +104,7 @@
                     </div>
 
                     <div class="menu-header">Navigation</div>
+                    @can('master-access')
                     <div class="menu-item has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
@@ -114,22 +115,32 @@
                         </a>
                         <div class="menu-submenu">
                             <div class="menu-item">
+                                @can('user-access')
                                 <a href="{{ route('users.index') }}" class="menu-link">
                                     <div class="menu-text">Data User</div>
                                 </a>
+                                @endcan
+                                @can('ticket-access')
                                 <a href="{{ route('tickets.index') }}" class="menu-link">
                                     <div class="menu-text">Data Ticket</div>
                                 </a>
+                                @endcan
+                                @can('sewa-access')
                                 <a href="{{ route('sewa.index') }}" class="menu-link">
                                     <div class="menu-text">Data Sewa</div>
                                 </a>
+                                @endcan
+                                @can('member-access')
                                 <a href="{{ route('members.index') }}" class="menu-link">
                                     <div class="menu-text">Data Member</div>
                                 </a>
+                                @endcan
                             </div>
                         </div>
                     </div>
+                    @endcan
 
+                    @can('transaction-access')
                     <div class="menu-item">
                         <a href="{{ route('transactions.index') }}" class="menu-link">
                             <div class="menu-icon">
@@ -137,7 +148,11 @@
                             </div>
                             <div class="menu-text">Data Transaction</div>
                         </a>
+                    </div>
+                    @endcan
 
+                    @can('penyewaan-access')
+                    <div class="menu-item">
                         <a href="{{ route('penyewaan.index') }}" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-nutrition bg-blue"></i>
@@ -145,7 +160,9 @@
                             <div class="menu-text">Data Penyewaan</div>
                         </a>
                     </div>
+                    @endcan
 
+                    @can('report-access')
                     <div class="menu-item has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
@@ -156,13 +173,17 @@
                         </a>
                         <div class="menu-submenu">
                             <div class="menu-item">
+                                @can('report-transaction-access')
                                 <a href="{{ route('transactions.report') }}" class="menu-link">
                                     <div class="menu-text">Report Transaction</div>
                                 </a>
+                                @endcan
                             </div>
                         </div>
                     </div>
+                    @endcan
 
+                    @can('management-access')
                     <div class="menu-item has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
@@ -184,6 +205,7 @@
                             </div>
                         </div>
                     </div>
+                    @endcan
 
                     <div class="menu-item d-flex">
                         <a href="javascript:;" class="app-sidebar-minify-btn ms-auto" data-toggle="app-sidebar-minify"><i class="ion-ios-arrow-back"></i>

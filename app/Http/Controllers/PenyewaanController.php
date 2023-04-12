@@ -12,6 +12,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PenyewaanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:penyewaan-access');
+    }
+
     public function index()
     {
         $title = 'Data Penyewaan';

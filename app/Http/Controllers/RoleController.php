@@ -10,6 +10,11 @@ use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:management-access');
+    }
+
     public function index()
     {
         $title = 'Data Role';

@@ -12,6 +12,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class MemberController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:member-access');
+    }
+
     public function index()
     {
         $title = 'Data Member';

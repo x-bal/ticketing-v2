@@ -14,4 +14,14 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function jenis()
+    {
+        return $this->belongsTo(JenisTicket::class, 'jenis_ticket_id');
+    }
+
+    public function terusan()
+    {
+        return $this->hasMany(Terusan::class);
+    }
 }
