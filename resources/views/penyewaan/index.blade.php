@@ -96,7 +96,7 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="name">Name</label>
+                                <label for="name">RFID</label>
                                 <input type="text" name="name" id="name" class="form-control" value="" readonly>
 
                                 @error('name')

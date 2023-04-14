@@ -29,3 +29,4 @@ Route::get('ticket/{id}/printQR', [ApiController::class, 'printQR']);
 Route::get('ticket/group', [ApiController::class, 'detailGroup']);
 Route::get('ticket/group-last', [ApiController::class, 'detailGroupLast']);
 Route::get('/members', [MemberController::class, 'findOne']);
+Route::get('/terusan', [ApiController::class, 'gateTerusan']);

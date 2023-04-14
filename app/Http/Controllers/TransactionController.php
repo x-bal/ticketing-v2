@@ -211,11 +211,15 @@ class TransactionController extends Controller
         try {
             DB::beginTransaction();
 
+            foreach ($transaction->detail as $detail) {
+                $detail->delete();
+            }
+
             $transaction->delete();
 
             DB::commit();
 
-            return redirect()->route('transaction.index')->with('success', "Transaction berhasil dihapus");
+            return redirect()->route('transactions.index')->with('success', "Transaction berhasil dihapus");
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', $th->getMessage());

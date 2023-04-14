@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('tickets/find/{ticket:id}', [TicketController::class, 'find'])->name('tickets.find');
     Route::resource('tickets', TicketController::class);
 
+    Route::get('terusan/get', [TerusanController::class, 'get'])->name('terusan.list');
     Route::resource('terusan', TerusanController::class);
 
     Route::get('sewa/get', [SewaController::class, 'get'])->name('sewa.list');
@@ -53,7 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::get('transactions/get', [TransactionController::class, 'get'])->name('transactions.list');
     Route::get('transactions/{transaction:id}/print', [TransactionController::class, 'print'])->name('transactions.print');
     Route::get('transaction/create', [DetailTransactionController::class, 'store']);
-    Route::get('report/transactions', [TransactionController::class, 'report'])->name('transactions.report');
+    Route::get('report/transactions', [TransactionController::class, 'report'])->name('reports.transactions');
     Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
     Route::resource('transactions', TransactionController::class);
 

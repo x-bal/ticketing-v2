@@ -15,8 +15,8 @@ class CreateTerusansTable extends Migration
     {
         Schema::create('terusans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ticket_id')->constrained('tickets');
             $table->string('name');
+            $table->integer('tripod')->unique();
             $table->timestamps();
         });
     }

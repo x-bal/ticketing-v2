@@ -18,15 +18,14 @@
     </div>
 
     <div class="panel-body">
-        <a href="#modal-dialog" id="btn-add" class="btn btn-primary mb-3" data-route="{{ route('sewa.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Sewa</a>
+        <a href="#modal-dialog" id="btn-add" class="btn btn-primary mb-3" data-route="{{ route('terusan.store') }}" data-bs-toggle="modal"><i class="ion-ios-add"></i> Add Terusan</a>
 
         <table id="datatable" class="table table-striped table-bordered align-middle">
             <thead>
                 <tr>
                     <th class="text-nowrap">No</th>
                     <th class="text-nowrap">Name</th>
-                    <th class="text-nowrap">Harga</th>
-                    <th class="text-nowrap">Device</th>
+                    <th class="text-nowrap">Tripod Id</th>
                     <th class="text-nowrap">Action</th>
                 </tr>
             </thead>
@@ -38,10 +37,10 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Form Sewa</h4>
+                    <h4 class="modal-title">Form Terusan</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                 </div>
-                <form action="" method="post" id="form-sewa">
+                <form action="" method="post" id="form-terusan">
                     @csrf
 
                     <div class="modal-body">
@@ -55,19 +54,10 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="harga">Harga</label>
-                            <input type="number" name="harga" id="harga" class="form-control" value="">
+                            <label for="tripod">Tripod ID</label>
+                            <input type="number" name="tripod" id="tripod" class="form-control" value="">
 
-                            @error('harga')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="device">Device ID</label>
-                            <input type="number" name="device" id="device" class="form-control" value="">
-
-                            @error('device')
+                            @error('tripod')
                             <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
@@ -99,7 +89,7 @@
             processing: true,
             serverSide: true,
             responsive: true,
-            ajax: "{{ route('sewa.list') }}",
+            ajax: "{{ route('terusan.list') }}",
             deferRender: true,
             pagination: true,
             columns: [{
@@ -111,12 +101,8 @@
                     name: 'name'
                 },
                 {
-                    data: 'harga',
-                    name: 'harga'
-                },
-                {
-                    data: 'device',
-                    name: 'device'
+                    data: 'tripod',
+                    name: 'tripod'
                 },
                 {
                     data: 'action',
@@ -127,30 +113,29 @@
 
         $("#btn-add").on('click', function() {
             let route = $(this).attr('data-route')
-            $("#form-sewa").attr('action', route)
+            $("#form-terusan").attr('action', route)
         })
 
         $("#btn-close").on('click', function() {
-            $("#form-sewa").removeAttr('action')
+            $("#form-terusan").removeAttr('action')
         })
 
         $("#datatable").on('click', '.btn-edit', function() {
             let route = $(this).attr('data-route')
             let id = $(this).attr('id')
 
-            $("#form-sewa").attr('action', route)
-            $("#form-sewa").append(`<input type="hidden" name="_method" value="PUT">`);
+            $("#form-terusan").attr('action', route)
+            $("#form-terusan").append(`<input type="hidden" name="_method" value="PUT">`);
 
             $.ajax({
-                url: "/sewa/" + id,
+                url: "/terusan/" + id,
                 type: 'GET',
                 method: 'GET',
                 success: function(response) {
-                    let sewa = response.sewa;
+                    let terusan = response.terusan;
 
-                    $("#name").val(sewa.name)
-                    $("#harga").val(sewa.harga)
-                    $("#device").val(sewa.device)
+                    $("#name").val(terusan.name)
+                    $("#tripod").val(terusan.tripod)
                 }
             })
         })
@@ -161,8 +146,8 @@
             $("#form-delete").attr('action', route)
 
             swal({
-                title: 'Hapus data ticket?',
-                text: 'Menghapus ticket bersifat permanen.',
+                title: 'Hapus data terusan?',
+                text: 'Menghapus terusan bersifat permanen.',
                 icon: 'error',
                 buttons: {
                     cancel: {

@@ -28,7 +28,7 @@
     <div id="app" class="app app-header-fixed app-sidebar-fixed">
         <div id="header" class="app-header">
             <div class="navbar-header">
-                <a href="index.html" class="navbar-brand"><span class="navbar-logo"><i class="ion-ios-browsers"></i></span> <b class="me-1">E</b> Ticket</a>
+                <a href="/dashboard" class="navbar-brand"><span class="navbar-logo"><i class="ion-ios-browsers"></i></span> <b class="me-1">E</b> Ticket</a>
                 <button type="button" class="navbar-mobile-toggler" data-toggle="app-sidebar-mobile">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -104,8 +104,17 @@
                     </div>
 
                     <div class="menu-header">Navigation</div>
+                    <div class="menu-item {{ request()->is('dashboard') ? 'active' : '' }}">
+                        <a href="/dashboard" class="menu-link">
+                            <div class="menu-icon">
+                                <i class="ion-ios-home bg-blue"></i>
+                            </div>
+                            <div class="menu-text">Dashboard</div>
+                        </a>
+                    </div>
+
                     @can('master-access')
-                    <div class="menu-item has-sub">
+                    <div class="menu-item {{ request()->is('users*') ||  request()->is('terusan*') || request()->is('tickets*') || request()->is('sewa*') || request()->is('members*') ? 'active' : '' }} has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-pulse"></i>
@@ -120,16 +129,29 @@
                                     <div class="menu-text">Data User</div>
                                 </a>
                                 @endcan
+                            </div>
+                            <div class="menu-item">
+                                @can('ticket-access')
+                                <a href="{{ route('terusan.index') }}" class="menu-link">
+                                    <div class="menu-text">Data Terusan</div>
+                                </a>
+                                @endcan
+                            </div>
+                            <div class="menu-item">
                                 @can('ticket-access')
                                 <a href="{{ route('tickets.index') }}" class="menu-link">
                                     <div class="menu-text">Data Ticket</div>
                                 </a>
                                 @endcan
+                            </div>
+                            <div class="menu-item">
                                 @can('sewa-access')
                                 <a href="{{ route('sewa.index') }}" class="menu-link">
                                     <div class="menu-text">Data Sewa</div>
                                 </a>
                                 @endcan
+                            </div>
+                            <div class="menu-item">
                                 @can('member-access')
                                 <a href="{{ route('members.index') }}" class="menu-link">
                                     <div class="menu-text">Data Member</div>
@@ -141,7 +163,7 @@
                     @endcan
 
                     @can('transaction-access')
-                    <div class="menu-item">
+                    <div class="menu-item {{ request()->is('transactions*') ? 'active' : '' }}">
                         <a href="{{ route('transactions.index') }}" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-nutrition bg-blue"></i>
@@ -152,7 +174,7 @@
                     @endcan
 
                     @can('penyewaan-access')
-                    <div class="menu-item">
+                    <div class="menu-item {{ request()->is('penyewaan*') ? 'active' : '' }}">
                         <a href="{{ route('penyewaan.index') }}" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-nutrition bg-blue"></i>
@@ -163,7 +185,7 @@
                     @endcan
 
                     @can('report-access')
-                    <div class="menu-item has-sub">
+                    <div class="menu-item {{ request()->is('reports*') ? 'active' : '' }} has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-pulse"></i>
@@ -174,7 +196,7 @@
                         <div class="menu-submenu">
                             <div class="menu-item">
                                 @can('report-transaction-access')
-                                <a href="{{ route('transactions.report') }}" class="menu-link">
+                                <a href="{{ route('reports.transactions') }}" class="menu-link">
                                     <div class="menu-text">Report Transaction</div>
                                 </a>
                                 @endcan
@@ -184,7 +206,7 @@
                     @endcan
 
                     @can('management-access')
-                    <div class="menu-item has-sub">
+                    <div class="menu-item {{ request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }} has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-pulse"></i>
@@ -193,12 +215,13 @@
                             <div class="menu-caret"></div>
                         </a>
                         <div class="menu-submenu">
-                            <div class="menu-item">
+                            <div class="menu-item {{ request()->is('roles*') ? 'active' : '' }}">
                                 <a href="{{ route('roles.index') }}" class="menu-link">
                                     <div class="menu-text"> Role</div>
                                 </a>
                             </div>
-                            <div class="menu-item">
+
+                            <div class="menu-item {{ request()->is('permissions*') ? 'active' : '' }}">
                                 <a href="{{ route('permissions.index') }}" class="menu-link">
                                     <div class="menu-text"> Permission</div>
                                 </a>

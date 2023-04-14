@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\History;
 use App\Models\Member;
+use App\Models\Terusan;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -135,48 +136,54 @@ class ApiController extends Controller
 
     public function check(Request $request)
     {
-        $transScanned = Transaction::where('ticket_code', $request->ticket)
-            ->select(['amount', 'amount_scanned', 'status'])->first();
+        $transScanned = Transaction::where('ticket_code', $request->ticket)->first();
 
         if ($transScanned) {
-            Transaction::where('ticket_code', $request->ticket)
-                ->update([
-                    "gate" => $request->gate,
-                ]);
+            if ($transScanned->ticket->tripod == $request->tripod) {
+                Transaction::where('ticket_code', $request->ticket)
+                    ->update([
+                        "gate" => $request->gate,
+                    ]);
 
-            if (!$transScanned) {
-                return response()->json([
-                    "status" => "not found"
-                ]);
-            }
+                if (!$transScanned) {
+                    return response()->json([
+                        "status" => "not found"
+                    ]);
+                }
 
 
-            if ($transScanned->status == "closed") {
+                if ($transScanned->status == "closed") {
+                    return response()->json([
+                        "status" => $transScanned->status,
+                        "count" => 0
+                    ]);
+                }
+
+                $counting = $transScanned->amount_scanned + 1;
+
+                if ($transScanned->amount == $counting) {
+                    Transaction::where('ticket_code', $request->ticket)
+                        ->update([
+                            "status" => "closed",
+                            "amount_scanned" => $counting
+                        ]);
+                } else {
+                    Transaction::where('ticket_code', $request->ticket)
+                        ->update([
+                            "amount_scanned" => $counting
+                        ]);
+                }
+
                 return response()->json([
                     "status" => $transScanned->status,
+                    "count" => $transScanned->amount - $counting
+                ]);
+            } else {
+                return response()->json([
+                    "status" => 'closed',
                     "count" => 0
                 ]);
             }
-
-            $counting = $transScanned->amount_scanned + 1;
-
-            if ($transScanned->amount == $counting) {
-                Transaction::where('ticket_code', $request->ticket)
-                    ->update([
-                        "status" => "closed",
-                        "amount_scanned" => $counting
-                    ]);
-            } else {
-                Transaction::where('ticket_code', $request->ticket)
-                    ->update([
-                        "amount_scanned" => $counting
-                    ]);
-            }
-
-            return response()->json([
-                "status" => $transScanned->status,
-                "count" => $transScanned->amount - $counting
-            ]);
         } else {
             $now = Carbon::now()->format('Y-m-d');
 
@@ -188,7 +195,7 @@ class ApiController extends Controller
 
                     if ($history >= 2) {
                         return response()->json([
-                            "status" => 'close',
+                            "status" => 'closed',
                             "count" => 0
                         ]);
                     } else {
@@ -206,6 +213,37 @@ class ApiController extends Controller
                     }
                 }
             }
+        }
+    }
+
+    public function gateTerusan(Request $request)
+    {
+        $ticket = Transaction::where('ticket_code', $request->ticket)->first();
+        $now = Carbon::now('Asia/Jakarta')->format('Y-m-d');
+        $date = Carbon::parse($ticket->created_at)->format('Y-m-d');
+
+        if ($ticket) {
+            if ($ticket->ticket->jenis_ticket_id == 2 && $date == $now) {
+                $terusan = Terusan::where('tripod', $request->tripod)->first();
+
+                if ($terusan) {
+                    return response()->json([
+                        "status" => 'open',
+                    ]);
+                } else {
+                    return response()->json([
+                        "status" => 'close',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    "status" => 'close',
+                ]);
+            }
+        } else {
+            return response()->json([
+                "status" => 'close',
+            ]);
         }
     }
 }

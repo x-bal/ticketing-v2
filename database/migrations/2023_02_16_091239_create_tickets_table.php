@@ -18,7 +18,7 @@ class CreateTicketsTable extends Migration
             $table->foreignId('jenis_ticket_id')->constrained('jenis_tickets');
             $table->string('name');
             $table->integer('harga');
-            $table->integer('tripod')->unique();
+            $table->integer('tripod');
             $table->timestamps();
         });
     }

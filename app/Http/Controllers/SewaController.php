@@ -25,7 +25,7 @@ class SewaController extends Controller
     public function get(Request $request)
     {
         if ($request->ajax()) {
-            $data = Sewa::orderBy('name', 'asc')->get();
+            $data = Sewa::orderBy('device', 'asc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -46,7 +46,8 @@ class SewaController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string',
-                'harga' => 'required|numeric'
+                'harga' => 'required|numeric',
+                'device' => 'required|numeric'
             ]);
 
             DB::beginTransaction();
@@ -66,7 +67,7 @@ class SewaController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'Sewa' => $sewa
+            'sewa' => $sewa
         ], 200);
     }
 

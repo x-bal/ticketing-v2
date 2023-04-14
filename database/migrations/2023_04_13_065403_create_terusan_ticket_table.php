@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSewasTable extends Migration
+class CreateTerusanTicketTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateSewasTable extends Migration
      */
     public function up()
     {
-        Schema::create('sewa', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->integer('harga');
-            $table->integer('device');
-            $table->timestamps();
+        Schema::create('terusan_ticket', function (Blueprint $table) {
+            $table->foreignId('terusan_id')->constrained('terusans');
+            $table->foreignId('ticket_id')->constrained('tickets');
         });
     }
 
@@ -29,6 +26,6 @@ class CreateSewasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sewas');
+        Schema::dropIfExists('terusan_ticket');
     }
 }

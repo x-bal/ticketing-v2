@@ -22,6 +22,6 @@ class Ticket extends Model
 
     public function terusan()
     {
-        return $this->hasMany(Terusan::class);
+        return $this->belongsToMany(Terusan::class);
     }
 }

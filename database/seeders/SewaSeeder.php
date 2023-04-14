@@ -21,10 +21,13 @@ class SewaSeeder extends Seeder
             ["name" =>  "Sewa Tikar", "harga" => 10000],
         ];
 
+        $no = 1;
+
         foreach ($tickets as $ticket) {
             Sewa::create([
                 'name' => $ticket['name'],
                 'harga' => $ticket['harga'],
+                'device' => $no++
             ]);
         }
     }
