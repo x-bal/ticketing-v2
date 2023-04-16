@@ -32,10 +32,10 @@
                 <br><br>
                 <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Jumlah Ticket <span style="float: right; margin-right: 20px;">{{ $transaction->tipe == 'group' ? $transaction->amount . ' X ' . number_format($transaction->ticket->harga, 0, ',', '.') : $transaction->amount }}</span></p>
 
-                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Asuransi <span style="float: right; margin-right: 20px;">{{ $transaction->tipe == 'group' ? $transaction->detail()->where('ticket_id',16)->first()->qty . ' X ' . number_format($transaction->detail()->where('ticket_id',16)->first()->ticket->harga, 0, ',', '.') : 0 }}</span></p>
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Asuransi <span style="float: right; margin-right: 20px;">{{ $transaction->tipe == 'group' ? $transaction->detail()->where('ticket_id',13)->first()->qty . ' X ' . number_format($transaction->detail()->where('ticket_id',13)->first()->ticket->harga, 0, ',', '.') : 0 }}</span></p>
 
-                @if($transaction->detail()->whereIn('ticket_id',[14,15])->first())
-                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Parkir <span style="float: right; margin-right: 20px;">{{ number_format($transaction->detail()->whereIn('ticket_id',[14,15])->sum('total'), 0 , ',', '.') }}</span></p>
+                @if($transaction->detail()->whereIn('ticket_id',[11,12])->first())
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Parkir <span style="float: right; margin-right: 20px;">{{ number_format($transaction->detail()->whereIn('ticket_id',[11,12])->sum('total'), 0 , ',', '.') }}</span></p>
                 @endif
                 <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Total <span style="float: right; margin-right: 20px; font-weight: bold;">Rp. {{ number_format($transaction->detail()->sum('total'), 0 , ',', '.') }}</span></p>
                 <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px"></p>

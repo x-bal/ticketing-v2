@@ -20,7 +20,7 @@ class DetailTransactionController extends Controller
             return DataTables::eloquent($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    if ($row->ticket_id != 16) {
+                    if ($row->ticket_id != 13) {
                         $actionBtn = '<button type="button" data-route="' . route('detail.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm"><i class="ion-ios-close"></i></button> <a href="' . route('detail.remove', $row->id) . '" class="btn btn-success btn-sm"><i class="ion-ios-remove"></i></a>';
                     } else {
                         $actionBtn = '';
@@ -74,8 +74,8 @@ class DetailTransactionController extends Controller
 
             $amount = DetailTransaction::where(['transaction_id' => $request->transaction])->sum('qty');
 
-            if (!in_array($request->ticket, [14, 15])) {
-                $asuransi = DetailTransaction::where(['transaction_id' => $request->transaction, 'ticket_id' => 16])->first();
+            if (!in_array($request->ticket, [11, 12])) {
+                $asuransi = DetailTransaction::where(['transaction_id' => $request->transaction, 'ticket_id' => 13])->first();
 
                 $asuransi->update([
                     'qty' => $amount - $asuransi->qty,
@@ -111,7 +111,7 @@ class DetailTransactionController extends Controller
         try {
             DB::beginTransaction();
 
-            $asuransi = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id, 'ticket_id' => 16])->first();
+            $asuransi = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id, 'ticket_id' => 13])->first();
 
             $amount = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id])->count('qty');
 
@@ -158,24 +158,23 @@ class DetailTransactionController extends Controller
             $print = 1;
             $tipe = 'group';
 
-            $totalHarga =  $transaction->detail()->whereNotIn('ticket_id', [14, 15])->sum('total');
-            $parkir = $transaction->detail()->whereIn('ticket_id', [14, 15])->sum('total') ?? 0;
-            $jasaRaharja = Ticket::find(16);
+            $totalHarga =  $transaction->detail()->whereNotIn('ticket_id', [11, 12])->sum('total');
+            $parkir = $transaction->detail()->whereIn('ticket_id', [11, 12])->sum('total') ?? 0;
+            $jasaRaharja = Ticket::find(13);
 
-            $firstTrx = $transaction->detail()->whereNotIn('ticket_id', [16])->first();
+            $firstTrx = $transaction->detail()->whereNotIn('ticket_id', [13])->first();
 
             $transaction->update([
                 'ticket_id' => $firstTrx->ticket_id,
-                'no_trx' => $lastTrx += 1,
                 'amount' => $firstTrx->qty,
                 'is_active' => 1
             ]);
 
-            $details = $transaction->detail()->whereNotIn('ticket_id', [14, 15])->get();
-            $asuransi = $transaction->detail()->where('ticket_id', 16)->first();
+            $details = $transaction->detail()->whereNotIn('ticket_id', [11, 12])->get();
+            $asuransi = $transaction->detail()->where('ticket_id', 13)->first();
 
             foreach ($details as $detail) {
-                if ($detail->ticket_id != $transaction->ticket_id && $detail->ticket_id != 16) {
+                if ($detail->ticket_id != $transaction->ticket_id && $detail->ticket_id != 13) {
                     $newTrx = Transaction::create([
                         'user_id' => auth()->user()->id,
                         'ticket_id' => $detail->ticket_id,
@@ -227,7 +226,7 @@ class DetailTransactionController extends Controller
         try {
             DB::beginTransaction();
 
-            if (!in_array($detailTransaction->ticket_id, [14, 15])) {
+            if (!in_array($detailTransaction->ticket_id, [11, 12])) {
                 $qty = $detailTransaction->qty;
 
                 $detailTransaction->update([
@@ -238,7 +237,7 @@ class DetailTransactionController extends Controller
                     'total' => $detailTransaction->qty * $detailTransaction->ticket->harga
                 ]);
 
-                $asuransi = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id, 'ticket_id' => 16])->first();
+                $asuransi = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id, 'ticket_id' => 13])->first();
 
                 $asuransi->update([
                     'qty' => $asuransi->qty - 1

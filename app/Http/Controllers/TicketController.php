@@ -36,7 +36,7 @@ class TicketController extends Controller
                 ->editColumn('action', function ($row) {
                     $actionBtn = '<a href="' . route('tickets.edit', $row->id) . '" class="btn btn-sm btn-success btn-edit">Edit</a> ';
 
-                    if (!in_array($row->id, [14, 15, 16])) {
+                    if (!in_array($row->id, [11, 12, 13])) {
                         $actionBtn .= '<button type="button" data-route="' . route('tickets.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
                     }
 

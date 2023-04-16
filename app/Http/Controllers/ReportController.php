@@ -105,7 +105,7 @@ class ReportController extends Controller
 
         $title = 'Rekap Transaction ' . $date;
         $breadcrumbs = ['Master', 'Rekap Transaction'];
-        $tickets = Ticket::whereNotIn('id', [14, 15, 16])->get();
+        $tickets = Ticket::whereNotIn('id', [11, 12, 13])->get();
 
         return view('report.rekap-transaction', compact('title', 'breadcrumbs', 'from', 'to', 'tickets'));
     }

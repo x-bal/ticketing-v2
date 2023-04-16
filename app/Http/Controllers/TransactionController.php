@@ -11,8 +11,6 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
-use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
@@ -41,8 +39,11 @@ class TransactionController extends Controller
             return DataTables::eloquent($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    //<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('transactions.update', $row->id) . '" data-bs-toggle="modal">Edit</a>
-                    $actionBtn = '<a href="' . route("transactions.print", $row->id) . '" class="btn btn-sm btn-primary">Print</a> <button type="button" data-route="' . route('transactions.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    $actionBtn = '<a href="' . route("transactions.print", $row->id) . '" class="btn btn-sm btn-primary">Print</a> ';
+                    if (auth()->user()->can('transaction-delete')) {
+                        $actionBtn .= '<button type="button" data-route="' . route('transactions.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    }
+
                     return $actionBtn;
                 })
                 ->addColumn('ticket', function ($row) {
@@ -93,9 +94,9 @@ class TransactionController extends Controller
 
             DetailTransaction::create([
                 'transaction_id' => $transaction->id,
-                'ticket_id' => 16,
+                'ticket_id' => 13,
                 'qty' => 1,
-                'total' => Ticket::find(16)->harga
+                'total' => Ticket::find(13)->harga
             ]);
         }
 
@@ -240,7 +241,7 @@ class TransactionController extends Controller
         $transactions = Transaction::get();
         $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
         $to = $request->to ? Carbon::parse($request->to)->addDay(1)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
-        $tickets = Ticket::whereNotIn('id', [14, 15, 16])->get();
+        $tickets = Ticket::whereNotIn('id', [11, 12, 13])->get();
 
         return view('transaction.report', compact('title', 'breadcrumbs', 'transactions', 'from', 'to', 'tickets'));
     }

@@ -34,8 +34,11 @@ class PenyewaanController extends Controller
             return DataTables::eloquent($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
+                    $actionBtn = '';
                     //<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('penyewaan.update', $row->id) . '" data-bs-toggle="modal">Edit</a>
-                    $actionBtn = ' <button type="button" data-route="' . route('penyewaan.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    if (auth()->user()->can('penyewaan-delete')) {
+                        $actionBtn = '<button type="button" data-route="' . route('penyewaan.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                    }
                     return $actionBtn;
                 })
                 ->editColumn('ticket', function ($row) {
