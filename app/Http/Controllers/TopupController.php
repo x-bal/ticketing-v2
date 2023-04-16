@@ -11,6 +11,12 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TopupController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:topup-access');
+    }
+
+
     public function index()
     {
         $title = 'Data Topup';
