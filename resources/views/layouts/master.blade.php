@@ -216,6 +216,13 @@
                                 </a>
                             </div>
                             @endcan
+                            @can('report-transaction-access')
+                            <div class="menu-item">
+                                <a href="{{ route('rekap.penyewaan') }}" class="menu-link">
+                                    <div class="menu-text">Rekap Penyewaan</div>
+                                </a>
+                            </div>
+                            @endcan
                         </div>
                     </div>
                     @endcan

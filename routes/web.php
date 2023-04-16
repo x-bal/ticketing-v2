@@ -82,9 +82,10 @@ Route::middleware('auth')->group(function () {
     Route::get('report/transactions-list', [ReportController::class, 'transactionList'])->name('reports.transaction-list');
     Route::get('rekap/transactions', [ReportController::class, 'rekapTransaction'])->name('rekap.transactions');
     Route::get('export-transaction', [ReportController::class, 'exportTransaction'])->name('transactions.export');
-    // Route::get('rekap/transactions-list', [ReportController::class, 'transactionList'])->name('rekap.transaction-list');
     Route::get('report/penyewaan', [ReportController::class, 'penyewaan'])->name('reports.penyewaan');
     Route::get('report/penyewaan-list', [ReportController::class, 'penyewaanList'])->name('reports.penyewaan-list');
+    Route::get('rekap/penyewaan', [ReportController::class, 'rekapPenyewaan'])->name('rekap.penyewaan');
+    Route::get('export-penyewaan', [ReportController::class, 'exportPenyewaan'])->name('penyewaan.export');
 });
 
 Route::get('/detail-group', [ApiTicketController::class, 'detailGroup']);

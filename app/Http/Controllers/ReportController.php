@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PenyewaanExport;
 use App\Exports\TransactionExport;
 use App\Models\Penyewaan;
+use App\Models\Sewa;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -115,6 +117,27 @@ class ReportController extends Controller
         $from = Carbon::parse(request('from'))->format('Y-m-d');
         $to = Carbon::parse(request('to'))->addDay(1)->format('Y-m-d');
 
-        return Excel::download(new TransactionExport($from, $to), 'Report Transaction.xlsx');
+        return Excel::download(new TransactionExport($from, $to), 'Rekap Transaction.xlsx');
+    }
+
+    public function rekapPenyewaan(Request $request)
+    {
+        $date = $request->from ? Carbon::parse($request->from)->format('d/m/Y') . ' s.d ' . Carbon::parse($request->to)->format('d/m/Y') : Carbon::now()->format('d/m/Y');
+        $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+        $to = $request->to ? Carbon::parse($request->to)->addDay(1)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+
+        $title = 'Rekap Penyewaan ' . $date;
+        $breadcrumbs = ['Master', 'Rekap Penyewaan'];
+        $sewa = Sewa::get();
+
+        return view('report.rekap-penyewaan', compact('title', 'breadcrumbs', 'from', 'to', 'sewa'));
+    }
+
+    public function exportPenyewaan(Request $request)
+    {
+        $from = Carbon::parse(request('from'))->format('Y-m-d');
+        $to = Carbon::parse(request('to'))->addDay(1)->format('Y-m-d');
+
+        return Excel::download(new PenyewaanExport($from, $to), 'Rekap Penyewaan.xlsx');
     }
 }
