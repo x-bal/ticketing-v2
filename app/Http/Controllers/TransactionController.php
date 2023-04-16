@@ -34,7 +34,9 @@ class TransactionController extends Controller
     public function get(Request $request)
     {
         if ($request->ajax()) {
-            $data = Transaction::where('is_active', 1)->orderBy('no_trx', 'DESC');
+            $tanggal = $request->tanggal ? $request->tanggal : Carbon::now()->format('Y-m-d');
+
+            $data = Transaction::where('is_active', 1)->whereDate('created_at', $tanggal)->orderBy('no_trx', 'DESC');
 
             return DataTables::eloquent($data)
                 ->addIndexColumn()
@@ -238,16 +240,8 @@ class TransactionController extends Controller
         $transactions = Transaction::get();
         $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
         $to = $request->to ? Carbon::parse($request->to)->addDay(1)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
-        $tickets = Ticket::get();
+        $tickets = Ticket::whereNotIn('id', [14, 15, 16])->get();
 
         return view('transaction.report', compact('title', 'breadcrumbs', 'transactions', 'from', 'to', 'tickets'));
-    }
-
-    public function export(Request $request)
-    {
-        $from = Carbon::parse(request('from'))->format('Y-m-d');
-        $to = Carbon::parse(request('to'))->addDay(1)->format('Y-m-d');
-
-        return Excel::download(new ReportExport($from, $to), 'Report Transaction.xlsx');
     }
 }

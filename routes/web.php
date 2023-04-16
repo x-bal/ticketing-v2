@@ -6,14 +6,17 @@ use App\Http\Controllers\DetailTransactionController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PenyewaanController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SewaController;
 use App\Http\Controllers\TerusanController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TopupController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +37,8 @@ Auth::routes();
 
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::post('profile', [DashboardController::class, 'update'])->name('profile.update');
 
     Route::get('users/get', [UserController::class, 'get'])->name('users.list');
     Route::resource('users', UserController::class);
@@ -54,22 +59,32 @@ Route::middleware('auth')->group(function () {
     Route::get('transactions/get', [TransactionController::class, 'get'])->name('transactions.list');
     Route::get('transactions/{transaction:id}/print', [TransactionController::class, 'print'])->name('transactions.print');
     Route::get('transaction/create', [DetailTransactionController::class, 'store']);
-    Route::get('report/transactions', [TransactionController::class, 'report'])->name('reports.transactions');
-    Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
     Route::resource('transactions', TransactionController::class);
 
     Route::get('detail/{id}/list', [DetailTransactionController::class, 'index'])->name('detail.list');
     Route::delete('detail/{detailTransaction:id}', [DetailTransactionController::class, 'destroy'])->name('detail.destroy');
     Route::get('detail/{id}/save', [DetailTransactionController::class, 'save'])->name('detail.save');
+    Route::get('detail/{detailTransaction:id}/remove', [DetailTransactionController::class, 'remove'])->name('detail.remove');
 
     Route::get('penyewaan/get', [PenyewaanController::class, 'get'])->name('penyewaan.list');
     Route::resource('penyewaan', PenyewaanController::class);
+
+    Route::get('topup/get', [TopupController::class, 'get'])->name('topup.list');
+    Route::resource('topup', TopupController::class);
 
     Route::get('roles/get', [RoleController::class, 'get'])->name('roles.list');
     Route::resource('roles', RoleController::class);
 
     Route::get('permissions/get', [PermissionController::class, 'get'])->name('permissions.list');
     Route::resource('permissions', PermissionController::class);
+
+    Route::get('report/transactions', [ReportController::class, 'transaction'])->name('reports.transactions');
+    Route::get('report/transactions-list', [ReportController::class, 'transactionList'])->name('reports.transaction-list');
+    Route::get('rekap/transactions', [ReportController::class, 'rekapTransaction'])->name('rekap.transactions');
+    Route::get('export-transaction', [ReportController::class, 'exportTransaction'])->name('transactions.export');
+    // Route::get('rekap/transactions-list', [ReportController::class, 'transactionList'])->name('rekap.transaction-list');
+    Route::get('report/penyewaan', [ReportController::class, 'penyewaan'])->name('reports.penyewaan');
+    Route::get('report/penyewaan-list', [ReportController::class, 'penyewaanList'])->name('reports.penyewaan-list');
 });
 
 Route::get('/detail-group', [ApiTicketController::class, 'detailGroup']);

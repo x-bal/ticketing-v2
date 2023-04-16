@@ -21,7 +21,7 @@ class DetailTransactionController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     if ($row->ticket_id != 16) {
-                        $actionBtn = '<button type="button" data-route="' . route('detail.destroy', $row->id) . '" class="delete btn btn-danger btn-xs fs-10px btn-delete btn-sm">Delete</button>';
+                        $actionBtn = '<button type="button" data-route="' . route('detail.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm"><i class="ion-ios-close"></i></button> <a href="' . route('detail.remove', $row->id) . '" class="btn btn-success btn-sm"><i class="ion-ios-remove"></i></a>';
                     } else {
                         $actionBtn = '';
                     }
@@ -152,63 +152,108 @@ class DetailTransactionController extends Controller
 
             $transaction = Transaction::find($id);
             $now = Carbon::now()->format('Y-m-d');
-            $lastTrx = Transaction::whereDate('created_at', $now)->orderBy('no_trx', 'DESC')->first()->no_trx;
+            $lastTrx = Transaction::whereDate('created_at', $now)->orderBy('no_trx', 'DESC')->first()->no_trx ?? 0;
             $tickets = [];
+            $idtrx = [];
             $print = 1;
             $tipe = 'group';
 
             $totalHarga =  $transaction->detail()->whereNotIn('ticket_id', [14, 15])->sum('total');
             $parkir = $transaction->detail()->whereIn('ticket_id', [14, 15])->sum('total') ?? 0;
-            $asuransi = Ticket::find(16)->harga;
+            $jasaRaharja = Ticket::find(16);
 
-            foreach ($transaction->detail as $key => $detail) {
-                if (!in_array($detail->ticket_id, [16])) {
+            $firstTrx = $transaction->detail()->whereNotIn('ticket_id', [16])->first();
 
-                    if (!in_array($detail->ticket_id, [14, 15])) {
-                        $trx = Transaction::create([
-                            'ticket_id' => $detail->ticket_id,
-                            'user_id' => auth()->user()->id,
-                            'no_trx' => $lastTrx += 1,
-                            'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('Ymd') . rand(100, 999),
-                            'amount' => $detail->qty,
-                            'is_active' => 1
-                        ]);
+            $transaction->update([
+                'ticket_id' => $firstTrx->ticket_id,
+                'no_trx' => $lastTrx += 1,
+                'amount' => $firstTrx->qty,
+                'is_active' => 1
+            ]);
 
-                        if ($key == 1) {
-                            DetailTransaction::create([
-                                'transaction_id' => $trx->id,
-                                'ticket_id' => $trx->ticket_id,
-                                'qty' => $trx->amount,
-                                'total' => ($trx->amount * $trx->ticket->harga) + $asuransi + $parkir
-                            ]);
-                        } else {
-                            DetailTransaction::create([
-                                'transaction_id' => $trx->id,
-                                'ticket_id' => $trx->ticket_id,
-                                'qty' => $trx->amount,
-                                'total' => ($trx->amount * $trx->ticket->harga) + $asuransi
-                            ]);
-                        }
-                        $tickets[] = Transaction::where('id', $trx->id)->first();
-                    }
+            $details = $transaction->detail()->whereNotIn('ticket_id', [14, 15])->get();
+            $asuransi = $transaction->detail()->where('ticket_id', 16)->first();
+
+            foreach ($details as $detail) {
+                if ($detail->ticket_id != $transaction->ticket_id && $detail->ticket_id != 16) {
+                    $newTrx = Transaction::create([
+                        'user_id' => auth()->user()->id,
+                        'ticket_id' => $detail->ticket_id,
+                        'no_trx' => $transaction->no_trx += 1,
+                        'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('Ymd') . rand(100, 999),
+                        'tipe' => 'group',
+                        'amount' => $detail->qty,
+                        'is_active' => 1
+                    ]);
+
+                    $detail->update(
+                        [
+                            'transaction_id' => $newTrx->id,
+                        ]
+                    );
+
+                    $newTrx->detail()->create([
+                        'ticket_id' => $jasaRaharja->id,
+                        'qty' => $newTrx->amount,
+                        'total' => $newTrx->amount * $jasaRaharja->harga
+                    ]);
+
+                    $idtrx[] = $newTrx->id;
                 }
             }
 
+            $idtrx[] .= $transaction->id;
 
-            foreach ($tickets as $ticket) {
-                if (in_array($ticket->ticket_id, [14, 15])) {
-                    unset($tickets[count($tickets) - 1]);
-                }
-            }
+            $tickets = Transaction::whereIn('id', $idtrx)->get();
 
-            $transaction->detail()->delete();
-            $transaction->delete();
+            $transaction->detail()->create([
+                'ticket_id' => $jasaRaharja->id,
+                'qty' => $transaction->amount,
+                'total' => $transaction->amount * $jasaRaharja->harga
+            ]);
+
+            $asuransi->delete();
 
             DB::commit();
 
             return view('transaction.print', compact('tipe', 'print', 'tickets'));
         } catch (\Throwable $th) {
             return $th->getMessage();
+        }
+    }
+
+    public function remove(DetailTransaction $detailTransaction)
+    {
+        try {
+            DB::beginTransaction();
+
+            if (!in_array($detailTransaction->ticket_id, [14, 15])) {
+                $qty = $detailTransaction->qty;
+
+                $detailTransaction->update([
+                    'qty' => $qty - 1
+                ]);
+
+                $detailTransaction->update([
+                    'total' => $detailTransaction->qty * $detailTransaction->ticket->harga
+                ]);
+
+                $asuransi = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id, 'ticket_id' => 16])->first();
+
+                $asuransi->update([
+                    'qty' => $asuransi->qty - 1
+                ]);
+
+                $asuransi->update([
+                    'total' => $asuransi->qty * $asuransi->ticket->harga
+                ]);
+            }
+
+            DB::commit();
+
+            return back();
+        } catch (\Throwable $th) {
+            return back()->with('error', $th->getMessage());
         }
     }
 }

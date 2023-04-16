@@ -24,4 +24,9 @@ class Ticket extends Model
     {
         return $this->belongsToMany(Terusan::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

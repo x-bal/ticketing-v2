@@ -52,12 +52,7 @@
             </div>
 
             <div class="col-md-6">
-                <div class="btn-group w-100">
-                    <a href="?tipe=htm" class="btn btn-purple {{ request('tipe') == 'htm' ? 'active' : '' }}">HTM</a>
-                    <a href="?tipe=sewa" class="btn btn-indigo {{ request('tipe') == 'sewa' ? 'active' : '' }}">Sewa</a>
-                </div>
-
-                <div class="content-ticket row mt-3">
+                <div class="content-ticket row">
                     @foreach($tickets as $ticket)
                     <div class="col-md-4 mb-2">
                         <button type="button" id="{{ $ticket->id }}" class="btn btn-primary text-center w-100 h-100 btn-ticket">

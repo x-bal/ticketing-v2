@@ -13,32 +13,33 @@
 </head>
 
 <body>
-    <div class="row">
-        <div style="max-width:80mm !important;  margin: 0 auto 0 auto; vertical-align: top; border-style: solid;border-width: 1px;">
-            <div style="widht:80mm; margin-left: 15px; margin-top:10px;margin-bottom:0px">
+    <div class="row" style="max-height:150mm !important;">
+        <div style="max-width:72mm !important;  margin: 0 auto 0 auto; vertical-align: top; border-style: solid;border-width: 1px;">
+            <div style="widht:72mm; margin-top:10px;margin-bottom:0px">
                 <div style="float: left;">
                     <img src="{{ asset('/images/heha.png') }}" width="80" width="80" alt="The Logo" class="brand-image" style="opacity: .8">
                 </div>
                 <div style="float: right; margin-right:5px">
                     <p style="font-size: 8.5pt;text-transform: uppercase; margin: 1px 1px 1px 1px;">RIO WATERPARK</p>
                     <p style="font-size: 8.5pt; margin-top:1px;margin-bottom: 5px;">{{ Carbon\Carbon::parse($transaction->created_at)->format('d/m/Y H:i:s') }} </p>
-                    <p style="font-size: 8.5pt;margin: 1px 1px 5px 1px;"> - {{ $transaction->created_by }} </p>
+                    <p style="font-size: 8.5pt;margin: 1px 1px 5px 1px;"> </p>
                 </div>
             </div>
 
-            <div style="widht:80mm; font-size:8pt; padding:2mm 0 2mm 0; margin-top: 60px; margin-bottom: 0px; ">
+            <div style="widht:72mm; font-size:8pt; padding:2mm 0 2mm 0; margin-top: 60px; margin-bottom: 0px; ">
                 <hr style="border-style: dashed;">
                 <p style="text-align:center;font-size:12pt;font-weight:bold;text-transform: uppercase;margin-bottom:0px">{{ $transaction->ticket->name }}</p>
                 <br><br>
-                <p style="font-size:10pt;margin-left:30px;margin-top:5px;margin-bottom:0px">Jumlah Ticket <span style="float: right; margin-right: 20px;">{{ $transaction->tipe == 'group' ? $transaction->amount . ' X ' . number_format($transaction->ticket->harga, 0, ',', '.') : $transaction->amount }}</span></p>
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Jumlah Ticket <span style="float: right; margin-right: 20px;">{{ $transaction->tipe == 'group' ? $transaction->amount . ' X ' . number_format($transaction->ticket->harga, 0, ',', '.') : $transaction->amount }}</span></p>
 
-                <p style="font-size:10pt;margin-left:30px;margin-top:5px;margin-bottom:0px">Total (Asuransi & Parkir)<span style="float: right; margin-right: 20px; font-weight: bold;">Rp. {{ number_format($transaction->detail()->sum('total'), 0 , ',', '.') }}</span></p>
-                <p style="font-size:10pt;margin-left:30px;margin-top:5px;margin-bottom:0px"></p>
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Asuransi <span style="float: right; margin-right: 20px;">{{ $transaction->tipe == 'group' ? $transaction->detail()->where('ticket_id',16)->first()->qty . ' X ' . number_format($transaction->detail()->where('ticket_id',16)->first()->ticket->harga, 0, ',', '.') : 0 }}</span></p>
+
+                @if($transaction->detail()->whereIn('ticket_id',[14,15])->first())
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Parkir <span style="float: right; margin-right: 20px;">{{ number_format($transaction->detail()->whereIn('ticket_id',[14,15])->sum('total'), 0 , ',', '.') }}</span></p>
+                @endif
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Total <span style="float: right; margin-right: 20px; font-weight: bold;">Rp. {{ number_format($transaction->detail()->sum('total'), 0 , ',', '.') }}</span></p>
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px"></p>
                 <br>
-                <br><br>
-                <!-- <p style="font-size:8.5pt;margin-top:5px;margin-left:30px;margin-bottom:0px">Total : Rp. {{ number_format($transaction->harga_ticket - $transaction->discount, 0, ',', '.') }}</p>
-                <p style="font-size:8.5pt;margin-left:30px;margin-top:5px;margin-bottom:0px">Diterima : Rp. {{ number_format($transaction->cash, 0, ',', '.') }}</p>
-                <p style="font-size:8.5pt;margin-left:30px;margin-top:5px">Kembali : Rp. {{ number_format($transaction->kembalian, 0, ',', '.') }}</p> -->
                 <p style="font-size:10pt;text-align: center;margin-top:5px">*** Terima Kasih ***</p>
                 <hr style="border-style: dashed;">
                 <p style="font-size:8pt;text-align: center;margin-top:5px">RIO WATERPARK " Tiket berlaku satu kali masuk "</p>

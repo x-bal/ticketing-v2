@@ -16,8 +16,8 @@
     @if($tipe == 'group')
     @foreach($tickets as $ticket)
     <div class="row">
-        <div style="max-width:80mm !important;  margin: 0 auto 0 auto; vertical-align: top; border-style: solid;border-width: 1px;">
-            <div style="widht:80mm; margin-left: 15px; margin-top:10px;margin-bottom:0px">
+        <div style="max-width:72mm !important;  margin: 0 auto 0 auto; vertical-align: top; border-style: solid;border-width: 1px;">
+            <div style="widht:72mm; margin-top:10px;margin-bottom:0px">
                 <div style="float: left;">
                     <img src="{{ asset('/images/heha.png') }}" width="80" width="80" alt="The Logo" class="brand-image" style="opacity: .8">
                 </div>
@@ -28,18 +28,18 @@
                 </div>
             </div>
 
-            <div style="widht:80mm; font-size:8pt; padding:2mm 0 2mm 0; margin-top: 60px; margin-bottom: 0px; ">
+            <div style="widht:72mm; font-size:8pt; padding:2mm 0 2mm 0; margin-top: 60px; margin-bottom: 0px; ">
                 <hr style="border-style: dashed;">
                 <p style="text-align:center;font-size:12pt;font-weight:bold;text-transform: uppercase;margin-bottom:0px">{{ $ticket->ticket->name }}</p>
                 <br><br>
-                <p style="font-size:10pt;margin-left:30px;margin-top:5px;margin-bottom:0px">Jumlah Ticket <span style="float: right; margin-right: 20px;">{{ $ticket->tipe == 'group' ? $ticket->amount . ' X ' . number_format($ticket->ticket->harga, 0, ',', '.') : $ticket->amount }}</span></p>
-                <p style="font-size:10pt;margin-left:30px;margin-top:5px;margin-bottom:0px">Total <span style="float: right; margin-right: 20px; font-weight: bold;">Rp. {{ number_format($ticket->detail()->sum('total'), 0 , ',', '.') }}</span></p>
-                <p style="font-size:10pt;margin-left:30px;margin-top:5px;margin-bottom:0px"></p>
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Jumlah Ticket <span style="float: right; margin-right: 20px;">{{ $ticket->tipe == 'group' ? $ticket->amount . ' X ' . number_format($ticket->ticket->harga, 0, ',', '.') : $ticket->amount }}</span></p>
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Asuransi <span style="float: right; margin-right: 20px;">{{ $ticket->tipe == 'group' ? $ticket->detail()->where('ticket_id',16)->first()->qty . ' X ' . number_format($ticket->detail()->where('ticket_id',16)->first()->ticket->harga, 0, ',', '.') : 0 }}</span></p>
+                @if($ticket->detail()->whereIn('ticket_id',[14,15])->first())
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Parkir <span style="float: right; margin-right: 20px;">{{ number_format($ticket->detail()->whereIn('ticket_id',[14,15])->sum('total'), 0 , ',', '.') }}</span></p>
+                @endif
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px">Total <span style="float: right; margin-right: 20px; font-weight: bold;">Rp. {{ number_format($ticket->detail()->sum('total'), 0 , ',', '.') }}</span></p>
+                <p style="font-size:10pt;margin-left:10px;margin-top:5px;margin-bottom:0px"></p>
                 <br>
-                <br><br>
-                <!-- <p style="font-size:8.5pt;margin-top:5px;margin-left:30px;margin-bottom:0px">Total : Rp. {{ number_format($ticket->harga_ticket - $ticket->discount, 0, ',', '.') }}</p>
-                <p style="font-size:8.5pt;margin-left:30px;margin-top:5px;margin-bottom:0px">Diterima : Rp. {{ number_format($ticket->cash, 0, ',', '.') }}</p>
-                <p style="font-size:8.5pt;margin-left:30px;margin-top:5px">Kembali : Rp. {{ number_format($ticket->kembalian, 0, ',', '.') }}</p> -->
                 <p style="font-size:10pt;text-align: center;margin-top:5px">*** Terima Kasih ***</p>
                 <hr style="border-style: dashed;">
                 <p style="font-size:8pt;text-align: center;margin-top:5px">RIO WATERPARK " Tiket berlaku satu kali masuk "</p>

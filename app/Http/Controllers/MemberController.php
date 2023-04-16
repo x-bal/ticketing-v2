@@ -14,7 +14,7 @@ class MemberController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:member-access');
+        $this->middleware('permission:member-access')->except(['findOne']);
     }
 
     public function index()

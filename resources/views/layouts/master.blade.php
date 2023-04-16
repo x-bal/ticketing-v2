@@ -46,11 +46,7 @@
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end me-1">
-                        <a href="javascript:;" class="dropdown-item">Edit Profile</a>
-                        <a href="javascript:;" class="dropdown-item"><span class="badge bg-danger float-end rounded-pill">2</span> Inbox</a>
-                        <a href="javascript:;" class="dropdown-item">Calendar</a>
-                        <a href="javascript:;" class="dropdown-item">Setting</a>
-                        <div class="dropdown-divider"></div>
+                        <a href="{{ route('profile') }}" class="dropdown-item">Edit Profile</a>
                         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item">Log Out</a>
                     </div>
 
@@ -77,27 +73,21 @@
                                     </div>
                                     <div class="menu-caret ms-auto"></div>
                                 </div>
-                                <small>Front end developer</small>
+                                <small>{{ auth()->user()->roles()->first()->name ?? '-' }}</small>
                             </div>
                         </a>
                     </div>
                     <div id="appSidebarProfileMenu" class="collapse">
                         <div class="menu-item pt-5px">
-                            <a href="javascript:;" class="menu-link">
+                            <a href="{{ route('profile') }}" class="menu-link">
                                 <div class="menu-icon"><i class="fa fa-cog"></i></div>
-                                <div class="menu-text">Settings</div>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a href="javascript:;" class="menu-link">
-                                <div class="menu-icon"><i class="fa fa-pencil-alt"></i></div>
-                                <div class="menu-text"> Send Feedback</div>
+                                <div class="menu-text">Edit Profile</div>
                             </a>
                         </div>
                         <div class="menu-item pb-5px">
-                            <a href="javascript:;" class="menu-link">
-                                <div class="menu-icon"><i class="fa fa-question-circle"></i></div>
-                                <div class="menu-text"> Helps</div>
+                            <a href="{{ route('logout') }}" class="menu-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <div class="menu-icon"><i class="fa fa-sign-out-alt"></i></div>
+                                <div class="menu-text"> Log Out</div>
                             </a>
                         </div>
                         <div class="menu-divider m-0"></div>
@@ -184,8 +174,19 @@
                     </div>
                     @endcan
 
+                    @can('penyewaan-access')
+                    <div class="menu-item {{ request()->is('topup*') ? 'active' : '' }}">
+                        <a href="{{ route('topup.index') }}" class="menu-link">
+                            <div class="menu-icon">
+                                <i class="ion-ios-nutrition bg-blue"></i>
+                            </div>
+                            <div class="menu-text">Data Topup</div>
+                        </a>
+                    </div>
+                    @endcan
+
                     @can('report-access')
-                    <div class="menu-item {{ request()->is('reports*') ? 'active' : '' }} has-sub">
+                    <div class="menu-item {{ request()->is('report*') ? 'active' : '' }} has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-pulse"></i>
@@ -194,13 +195,27 @@
                             <div class="menu-caret"></div>
                         </a>
                         <div class="menu-submenu">
+                            @can('report-transaction-access')
                             <div class="menu-item">
-                                @can('report-transaction-access')
                                 <a href="{{ route('reports.transactions') }}" class="menu-link">
                                     <div class="menu-text">Report Transaction</div>
                                 </a>
-                                @endcan
                             </div>
+                            @endcan
+                            @can('report-transaction-access')
+                            <div class="menu-item">
+                                <a href="{{ route('rekap.transactions') }}" class="menu-link">
+                                    <div class="menu-text">Rekap Transaction</div>
+                                </a>
+                            </div>
+                            @endcan
+                            @can('report-transaction-access')
+                            <div class="menu-item">
+                                <a href="{{ route('reports.penyewaan') }}" class="menu-link">
+                                    <div class="menu-text">Report Penyewaan</div>
+                                </a>
+                            </div>
+                            @endcan
                         </div>
                     </div>
                     @endcan
