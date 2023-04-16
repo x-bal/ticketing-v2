@@ -174,7 +174,7 @@
                     </div>
                     @endcan
 
-                    @can('penyewaan-access')
+                    @can('topup-access')
                     <div class="menu-item {{ request()->is('topup*') ? 'active' : '' }}">
                         <a href="{{ route('topup.index') }}" class="menu-link">
                             <div class="menu-icon">
