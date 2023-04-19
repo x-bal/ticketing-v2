@@ -139,51 +139,51 @@ class ApiController extends Controller
         $transScanned = Transaction::where('ticket_code', $request->ticket)->first();
 
         if ($transScanned) {
-            if ($transScanned->ticket->tripod == $request->tripod) {
-                Transaction::where('ticket_code', $request->ticket)
-                    ->update([
-                        "gate" => $request->gate,
-                    ]);
+            // if ($transScanned->ticket->tripod == $request->tripod) {
+            Transaction::where('ticket_code', $request->ticket)
+                ->update([
+                    "gate" => $request->gate,
+                ]);
 
-                if (!$transScanned) {
-                    return response()->json([
-                        "status" => "not found"
-                    ]);
-                }
+            if (!$transScanned) {
+                return response()->json([
+                    "status" => "not found"
+                ]);
+            }
 
 
-                if ($transScanned->status == "closed") {
-                    return response()->json([
-                        "status" => $transScanned->status,
-                        "count" => 0
-                    ]);
-                }
-
-                $counting = $transScanned->amount_scanned + 1;
-
-                if ($transScanned->amount == $counting) {
-                    Transaction::where('ticket_code', $request->ticket)
-                        ->update([
-                            "status" => "closed",
-                            "amount_scanned" => $counting
-                        ]);
-                } else {
-                    Transaction::where('ticket_code', $request->ticket)
-                        ->update([
-                            "amount_scanned" => $counting
-                        ]);
-                }
-
+            if ($transScanned->status == "closed") {
                 return response()->json([
                     "status" => $transScanned->status,
-                    "count" => $transScanned->amount - $counting
-                ]);
-            } else {
-                return response()->json([
-                    "status" => 'closed',
                     "count" => 0
                 ]);
             }
+
+            $counting = $transScanned->amount_scanned + 1;
+
+            if ($transScanned->amount == $counting) {
+                Transaction::where('ticket_code', $request->ticket)
+                    ->update([
+                        "status" => "closed",
+                        "amount_scanned" => $counting
+                    ]);
+            } else {
+                Transaction::where('ticket_code', $request->ticket)
+                    ->update([
+                        "amount_scanned" => $counting
+                    ]);
+            }
+
+            return response()->json([
+                "status" => $transScanned->status,
+                "count" => $transScanned->amount - $counting
+            ]);
+            // } else {
+            //     return response()->json([
+            //         "status" => 'closed',
+            //         "count" => 0
+            //     ]);
+            // }
         } else {
             $now = Carbon::now()->format('Y-m-d');
 
