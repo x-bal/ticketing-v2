@@ -33,9 +33,9 @@ class ReportController extends Controller
             if ($request->from && $request->to) {
                 $to = Carbon::parse($request->to)->addDay(1)->format('Y-m-d');
 
-                $data = Transaction::whereBetween('created_at', [$request->from, $to]);
+                $data = Transaction::where('is_active', 1)->whereBetween('created_at', [$request->from, $to]);
             } else {
-                $data = Transaction::whereDate('created_at', $now);
+                $data = Transaction::where('is_active', 1)->whereDate('created_at', $now);
             }
 
             return DataTables::eloquent($data)
@@ -107,7 +107,7 @@ class ReportController extends Controller
 
         $title = 'Rekap Transaction ' . $date;
         $breadcrumbs = ['Master', 'Rekap Transaction'];
-        $tickets = Ticket::whereNotIn('id', [11, 12, 13])->get();
+        $tickets = Ticket::get();
 
         return view('report.rekap-transaction', compact('title', 'breadcrumbs', 'from', 'to', 'tickets'));
     }

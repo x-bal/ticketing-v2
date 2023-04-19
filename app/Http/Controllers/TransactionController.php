@@ -34,7 +34,11 @@ class TransactionController extends Controller
         if ($request->ajax()) {
             $tanggal = $request->tanggal ? $request->tanggal : Carbon::now()->format('Y-m-d');
 
-            $data = Transaction::where('is_active', 1)->whereDate('created_at', $tanggal)->orderBy('no_trx', 'DESC');
+            if (auth()->user()->roles()->first()->id == 1) {
+                $data = Transaction::where('is_active', 1)->whereDate('created_at', $tanggal)->orderBy('no_trx', 'DESC');
+            } else {
+                $data = Transaction::where(['is_active' => 1, 'user_id' => auth()->user()->id])->whereDate('created_at', $tanggal)->orderBy('no_trx', 'DESC');
+            }
 
             return DataTables::eloquent($data)
                 ->addIndexColumn()
@@ -92,12 +96,12 @@ class TransactionController extends Controller
                 'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(100, 999)
             ]);
 
-            DetailTransaction::create([
-                'transaction_id' => $transaction->id,
-                'ticket_id' => 13,
-                'qty' => 1,
-                'total' => Ticket::find(13)->harga
-            ]);
+            // DetailTransaction::create([
+            //     'transaction_id' => $transaction->id,
+            //     'ticket_id' => 13,
+            //     'qty' => 0,
+            //     'total' => 0
+            // ]);
         }
 
 

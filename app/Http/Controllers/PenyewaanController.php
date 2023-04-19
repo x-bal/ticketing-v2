@@ -102,7 +102,9 @@ class PenyewaanController extends Controller
                     'sewa_id' => $request->ticket,
                     'qty' => $request->qty,
                     'metode' => $request->metode,
-                    'jumlah' => $request->jumlah
+                    'jumlah' => str_replace('.', '', $request->jumlah),
+                    'bayar' => str_replace('.', '', $request->bayar),
+                    'kembali' => str_replace('.', '', $request->kembali),
                 ]);
 
                 DB::commit();

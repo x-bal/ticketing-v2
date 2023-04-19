@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('detail/{detailTransaction:id}', [DetailTransactionController::class, 'destroy'])->name('detail.destroy');
     Route::get('detail/{id}/save', [DetailTransactionController::class, 'save'])->name('detail.save');
     Route::get('detail/{detailTransaction:id}/remove', [DetailTransactionController::class, 'remove'])->name('detail.remove');
+    Route::get('/detail/qty', [DetailTransactionController::class, 'qty'])->name('detail.qty');
 
     Route::get('penyewaan/get', [PenyewaanController::class, 'get'])->name('penyewaan.list');
     Route::resource('penyewaan', PenyewaanController::class);

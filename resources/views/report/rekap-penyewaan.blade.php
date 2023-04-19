@@ -61,7 +61,10 @@
                 @endforeach
                 <tr>
                     <th>Total Amount :</th>
-                    <th colspan="3" class="text-end">
+                    <th class="text-center">
+                        <b>{{ App\Models\Penyewaan::whereBetween('created_at', [$from, $to])->sum('qty') }}</b>
+                    </th>
+                    <th colspan="2" class="text-end">
                         <b>{{ number_format(App\Models\Penyewaan::whereBetween('created_at', [$from, $to])->sum('jumlah'), 0, ',', '.') }}</b>
                     </th>
                 </tr>

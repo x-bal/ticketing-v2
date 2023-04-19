@@ -72,10 +72,19 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="harga_ticket">Harga Tiket</label>
-                                <input type="number" name="harga_ticket" id="harga_ticket" class="form-control" value="" readonly>
+                                <label for="harga_ticket">Harga Sewa</label>
+                                <input type="text" name="harga_ticket" id="harga_ticket" class="form-control" value="" readonly>
 
                                 @error('harga_ticket')
+                                <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group mb-3 bayar d-none">
+                                <label for="bayar">Bayar</label>
+                                <input type="text" name="bayar" id="bayar" class="form-control" value="0">
+
+                                @error('bayar')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -106,9 +115,18 @@
 
                             <div class="form-group mb-3">
                                 <label for="sisa">Saldo</label>
-                                <input type="number" name="sisa" id="sisa" class="form-control" value="0" readonly>
+                                <input type="text" name="sisa" id="sisa" class="form-control" value="0" readonly>
 
                                 @error('sisa')
+                                <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group mb-3 kembali d-none">
+                                <label for="kembali">Kembali</label>
+                                <input type="text" name="kembali" id="kembali" class="form-control" value="0" readonly>
+
+                                @error('kembali')
                                 <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -117,7 +135,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-3">
                                 <label for="jumlah">Jumlah</label>
-                                <input type="number" name="jumlah" id="jumlah" class="form-control" value="0" readonly>
+                                <input type="text" name="jumlah" id="jumlah" class="form-control" value="0" readonly>
 
                                 @error('jumlah')
                                 <small class="text-danger">{{ $message }}</small>
@@ -276,17 +294,21 @@
             let harga_ticket = harga * amount;
             let jumlah = (harga * amount);
 
-            $("#harga_ticket").val(harga_ticket)
-            $("#jumlah").val(jumlah)
-            $("#cash").val(jumlah)
+            $("#harga_ticket").val((harga_ticket / 1000).toFixed(3))
+            $("#jumlah").val((jumlah / 1000).toFixed(3))
+            $("#cash").val((jumlah / 1000).toFixed(3))
         })
 
         $("#metode").on('change', function() {
             let metode = $(this).val()
             if (metode == 'tap') {
                 $("#name").removeAttr('readonly');
+                $(".bayar").addClass('d-none');
+                $(".kembali").addClass('d-none');
             } else {
                 $("#name").attr("readonly", "readonly")
+                $(".bayar").removeClass('d-none');
+                $(".kembali").removeClass('d-none');
             }
         })
 
@@ -295,11 +317,10 @@
             let harga = $('#ticket option:selected').attr('data-harga');
             let harga_ticket = harga * amount;
 
-            console.log(harga_ticket)
             let jumlah = (harga * amount);
             // $("#harga_ticket").val(harga_ticket)
-            $("#jumlah").val(jumlah)
-            $("#cash").val(jumlah)
+            $("#jumlah").val((jumlah / 1000).toFixed(3))
+            $("#cash").val((jumlah / 1000).toFixed(3))
 
         })
 
@@ -312,29 +333,6 @@
             $("#jumlah").val(jumlah)
             $("#cash").val(jumlah)
         })
-
-        // $("#type_customer").on('change', function() {
-        //     let type = $(this).val();
-
-        // if (type == 'group') {
-        //     $("#print").removeAttr('readonly')
-        // } else {
-        //     $("#amount").val(1)
-        //     $("#print").val(1)
-        //     $("#print").attr('readonly', 'readonly')
-        // }
-        // })
-
-        // $("#metode").on('change', function() {
-        //     let metode = $(this).val();
-
-        //     if (metode != 'cash') {
-        //         $("#cash").val(0);
-        //         $("#cash").attr('readonly', 'readonly')
-        //     } else {
-        //         $("#cash").removeAttr('readonly')
-        //     }
-        // })
 
         $('#form-penyewaan').on('keyup keypress', function(e) {
             var keyCode = e.keyCode || e.which;
@@ -372,6 +370,38 @@
                 })
             }
         })
+
+        $("#bayar").on('change', function() {
+            let bayar = $(this).val().replace('.', '');
+            let price = $("#jumlah").val().replace('.', '')
+            let kembali = parseInt(bayar - price)
+            $("#kembali").val((kembali / 1000).toFixed(3))
+        })
+
+        var rupiah = document.getElementById('bayar');
+        rupiah.addEventListener('keyup', function(e) {
+            // tambahkan 'Rp.' pada saat form di ketik
+            // gunakan fungsi formatRupiah() untuk mengubah angka yang di ketik menjadi format angka
+            rupiah.value = formatRupiah(this.value);
+        });
+
+        /* Fungsi formatRupiah */
+        function formatRupiah(angka) {
+            var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            // tambahkan titik jika yang di input sudah menjadi angka ribuan
+            if (ribuan) {
+                separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            return undefined ? rupiah : (rupiah ? rupiah : '');
+        }
     })
 </script>
 @endpush

@@ -19,25 +19,23 @@ class DetailTransactionController extends Controller
 
             return DataTables::eloquent($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    if ($row->ticket_id != 13) {
-                        $actionBtn = '<button type="button" data-route="' . route('detail.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm"><i class="ion-ios-close"></i></button> <a href="' . route('detail.remove', $row->id) . '" class="btn btn-success btn-sm"><i class="ion-ios-remove"></i></a>';
-                    } else {
-                        $actionBtn = '';
-                    }
-
+                ->editColumn('action', function ($row) {
+                    $actionBtn = '<button type="button" data-route="' . route('detail.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm"><i class="ion-ios-close"></i></button> <a href="' . route('detail.remove', $row->id) . '" class="btn btn-success btn-sm"><i class="ion-ios-remove"></i></a>';
                     return $actionBtn;
                 })
-                ->addColumn('ticket', function ($row) {
+                ->editColumn('ticket', function ($row) {
                     return $row->ticket->name;
                 })
-                ->addColumn('harga', function ($row) {
+                ->editColumn('qty', function ($row) {
+                    return '<input type="number" name="qty" id="' . $row->id . '" class="form-control qty" value="' . $row->qty . '" autofocus>';
+                })
+                ->editColumn('harga', function ($row) {
                     return number_format($row->ticket->harga, 0, ',', '.');
                 })
                 ->editColumn('total', function ($row) {
                     return number_format($row->ticket->harga * $row->qty, 0, ',', '.');
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'qty'])
                 ->make(true);
         }
     }
@@ -253,6 +251,35 @@ class DetailTransactionController extends Controller
             return back();
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function qty(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $detail = DetailTransaction::find($request->id);
+            $total = $request->qty * $detail->ticket->harga;
+            $detail->update([
+                'qty' => $request->qty,
+                'total' => $total
+            ]);
+
+            $totalPrice = DetailTransaction::where('transaction_id', $detail->transaction_id)->sum('total');
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'totalPrice' => number_format($totalPrice, 0, ',', '.'),
+                'price' => $totalPrice
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ]);
         }
     }
 }

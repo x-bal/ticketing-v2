@@ -16,9 +16,9 @@ class DashboardController extends Controller
         $title = 'Dashboard';
         $breadcrumbs = ['Dashboard'];
         $now  = Carbon::now()->format('Y-m-d');
-        $transaction = Transaction::whereDate('created_at', $now)->count();
+        $transaction = Transaction::whereDate('created_at', $now)->where('is_active', 1)->count();
         $sewa = Penyewaan::whereDate('created_at', $now)->count();
-        $incometrx = array_sum(Transaction::withSum('detail', 'total')->whereDate('created_at', $now)->pluck('detail_sum_total')->toArray());
+        $incometrx = array_sum(Transaction::withSum('detail', 'total')->where('is_active', 1)->whereDate('created_at', $now)->pluck('detail_sum_total')->toArray());
         $incomerent = Penyewaan::whereDate('created_at', $now)->sum('jumlah');
 
         return view('dashboard.index', compact('title', 'breadcrumbs', 'transaction', 'sewa', 'incometrx', 'incomerent'));

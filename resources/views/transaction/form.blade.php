@@ -36,12 +36,12 @@
 
                 <div class="form-group mb-3">
                     <label for="bayar">Bayar</label>
-                    <input type="number" name="bayar" id="bayar" class="form-control" value="0" autofocus>
+                    <input type="text" name="bayar" id="bayar" class="form-control" value="0" autofocus>
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="kembali">Kembali</label>
-                    <input type="number" name="kembali" id="kembali" class="form-control" value="0" readonly>
+                    <input type="text" name="kembali" id="kembali" class="form-control" value="0" readonly>
                 </div>
 
                 <input type="hidden" name="totalPrice" value="{{ $transaction->detail()->sum('total') }}" id="totalPrice">
@@ -182,10 +182,55 @@
         })
 
         $("#bayar").on('change', function() {
-            let bayar = $(this).val();
+            let bayar = $(this).val().replace('.', '');
             let price = $("#totalPrice").val()
             let kembali = parseInt(bayar - price)
-            $("#kembali").val(kembali)
+            $("#kembali").val((kembali / 1000).toFixed(3))
+        })
+
+        var rupiah = document.getElementById('bayar');
+        rupiah.addEventListener('keyup', function(e) {
+            // tambahkan 'Rp.' pada saat form di ketik
+            // gunakan fungsi formatRupiah() untuk mengubah angka yang di ketik menjadi format angka
+            rupiah.value = formatRupiah(this.value);
+        });
+
+        /* Fungsi formatRupiah */
+        function formatRupiah(angka) {
+            var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            // tambahkan titik jika yang di input sudah menjadi angka ribuan
+            if (ribuan) {
+                separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            return undefined ? rupiah : (rupiah ? rupiah : '');
+        }
+
+        $("#datatable").on('change', '.qty', function() {
+            let qty = $(this).val();
+            let id = $(this).attr('id');
+
+            $.ajax({
+                url: "{{ route('detail.qty') }}",
+                method: "GET",
+                type: "GET",
+                data: {
+                    id: id,
+                    qty: qty,
+                },
+                success: function(response) {
+                    $("#price").empty().append('Rp. ' + response.totalPrice)
+                    $("#totalPrice").empty().val(response.price)
+                    getData()
+                }
+            })
         })
     })
 </script>

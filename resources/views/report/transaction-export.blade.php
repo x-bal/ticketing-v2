@@ -14,16 +14,19 @@
         @foreach($tickets as $ticket)
         <tr>
             <td>{{ $ticket->name }}</td>
-            <td class="text-center">{{ App\Models\Transaction::whereBetween('created_at', [$from, $to])->where('ticket_id', $ticket->id)->sum('amount') }}</td>
-            <td class="text-center">{{ $ticket->harga }}</td>
+            <td class="text-center">{{ App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->where('ticket_id', $ticket->id)->sum('qty') }}</td>
+            <td class="text-center">{{ $ticket->harga, }}</td>
             <td class="text-end">
-                {{ App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->whereIn('transaction_id', $ticket->transactions()->pluck('id'))->sum('total') ?? 0 }}
+                {{ App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->where('ticket_id', $ticket->id)->sum('total')  ?? 0 }}
             </td>
         </tr>
         @endforeach
         <tr>
             <th>Total Amount :</th>
-            <th colspan="3" class="text-end">
+            <th class="text-center">
+                <b>{{ App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->sum('qty') }}</b>
+            </th>
+            <th colspan="2" class="text-end">
                 <b>{{ App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->whereIn('transaction_id', App\Models\Transaction::where('is_active', 1)->pluck('id'))->sum('total') }}</b>
             </th>
         </tr>
