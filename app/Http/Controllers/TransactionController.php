@@ -96,12 +96,12 @@ class TransactionController extends Controller
                 'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(100, 999)
             ]);
 
-            // DetailTransaction::create([
-            //     'transaction_id' => $transaction->id,
-            //     'ticket_id' => 13,
-            //     'qty' => 0,
-            //     'total' => 0
-            // ]);
+            DetailTransaction::create([
+                'transaction_id' => $transaction->id,
+                'ticket_id' => 13,
+                'qty' => 0,
+                'total' => 0
+            ]);
         }
 
 
