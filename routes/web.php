@@ -95,7 +95,7 @@ Route::get('/detail-group', [ApiTicketController::class, 'detailGroup']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('reset', function () {
-    Artisan::command('config:clear');
-    Artisan::command('cache:clear');
-    Artisan::command('optimize:clear');
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('optimize:clear');
 });
