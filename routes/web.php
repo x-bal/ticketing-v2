@@ -14,6 +14,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TopupController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
@@ -92,3 +93,9 @@ Route::middleware('auth')->group(function () {
 Route::get('/detail-group', [ApiTicketController::class, 'detailGroup']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('reset', function () {
+    Artisan::command('config:clear');
+    Artisan::command('cache:clear');
+    Artisan::command('optimize:clear');
+});

@@ -21,7 +21,7 @@
                 </div>
                 <div style="float: right; margin-right:5px">
                     <p style="font-size: 8.5pt;text-transform: uppercase; margin: 1px 1px 1px 1px;">RIO WATERPARK</p>
-                    <p style="font-size: 8.5pt; margin-top:1px;margin-bottom: 5px;">{{ $transaction->created_at }} </p>
+                    <p style="font-size: 8.5pt; margin-top:1px;margin-bottom: 5px;">{{ Carbon\Carbon::parse($transaction->created_at)->format('d/m/Y H:i:s') }} </p>
                     <p style="font-size: 8.5pt;margin: 1px 1px 5px 1px;"> </p>
                 </div>
             </div>
