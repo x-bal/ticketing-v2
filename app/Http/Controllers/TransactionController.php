@@ -85,7 +85,8 @@ class TransactionController extends Controller
             $notrx = 1;
         }
 
-        $active = Transaction::whereDate('created_at', $now)->where('is_active', 0)->latest()->first();
+        $active = Transaction::whereDate('created_at', $now)->where(['is_active' => 0, 'user_id' => auth()->user()->id])->latest()->first();
+
         if ($active) {
             $transaction = $active;
         } else {
