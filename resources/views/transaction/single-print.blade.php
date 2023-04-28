@@ -35,7 +35,7 @@ date_default_timezone_set('Asia/Jakarta')
 
             <div style="widht:72mm; font-size:8pt; padding:2mm 0 2mm 0; margin-top: 40px; margin-bottom: 0px; ">
                 <hr style="border-style: dashed;">
-                <p style="text-align:center;font-size:12pt;font-weight:bold;text-transform: uppercase;margin-bottom:0px">{{ $transaction->ticket->name }} <span style="text-align:center;font-size:8pt;margin-bottom:0px">{{ $transaction->ticket_code }}</span>
+                <p style="text-align:center;font-size:12pt;font-weight:bold;text-transform: uppercase;margin-bottom:0px">{{ $transaction->ticket->name }} <br> <span style="text-align:center;font-size:8pt;margin-bottom:0px">{{ $transaction->ticket_code }}</span>
                 </p>
                 <br><br>
 
