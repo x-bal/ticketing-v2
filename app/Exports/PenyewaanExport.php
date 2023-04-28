@@ -8,12 +8,13 @@ use Maatwebsite\Excel\Concerns\FromView;
 
 class PenyewaanExport implements FromView
 {
-    protected $from, $to;
+    protected $from, $to, $kasir;
 
-    function __construct($from, $to,)
+    function __construct($from, $to, $kasir)
     {
         $this->from = $from;
         $this->to = $to;
+        $this->kasir = $kasir;
     }
 
     public function view(): View
@@ -24,6 +25,7 @@ class PenyewaanExport implements FromView
             'sewa' => $sewa,
             'from' => $this->from,
             'to' => $this->to,
+            'kasir' => $this->kasir,
         ]);
     }
 }

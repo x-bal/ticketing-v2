@@ -29,10 +29,21 @@
                 <label for="to">To</label>
                 <input type="date" name="to" id="to" class="form-control" value="{{ request('to') ?? Carbon\Carbon::now()->format('Y-m-d') }}">
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="kasir">Kasir</label>
+                    <select name="kasir" id="kasir" class="form-control">
+                        <option value="all" selected>All</option>
+                        @foreach($users as $user)
+                        <option {{ request('kasir') == $user->id ? 'selected' : '' }} value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
-            <div class="col-md-6 mt-1">
+            <div class="col-md-3 mt-1">
                 <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                <a href="{{ route('penyewaan.export') }}" class="btn btn-success mt-3">Export</a>
+                <a href="{{ route('penyewaan.export') }}?from={{ request('from') }}&to={{ request('to') }}&kasir={{ request('kasir') }}" class="btn btn-success mt-3">Export</a>
             </div>
         </form>
 
@@ -51,22 +62,40 @@
             <tbody>
                 @foreach($sewa as $sw)
                 <tr>
+                    @if(request('kasir') == 'all')
                     <td>{{ $sw->name }}</td>
                     <td class="text-center">{{ App\Models\Penyewaan::whereBetween('created_at', [$from, $to])->where('sewa_id', $sw->id)->count() }}</td>
                     <td class="text-center">{{ number_format($sw->harga,0, ',', '.') }}</td>
                     <td class="text-end">
                         {{ number_format(App\Models\Penyewaan::whereBetween('created_at', [$from, $to])->where('sewa_id', $sw->id)->sum('jumlah'), 0, ',', '.') ?? 0 }}
                     </td>
+                    @else
+                    <td>{{ $sw->name }}</td>
+                    <td class="text-center">{{ App\Models\Penyewaan::where('user_id', request('kasir'))->whereBetween('created_at', [$from, $to])->where('sewa_id', $sw->id)->count() }}</td>
+                    <td class="text-center">{{ number_format($sw->harga,0, ',', '.') }}</td>
+                    <td class="text-end">
+                        {{ number_format(App\Models\Penyewaan::where('user_id', request('kasir'))->whereBetween('created_at', [$from, $to])->where('sewa_id', $sw->id)->sum('jumlah'), 0, ',', '.') ?? 0 }}
+                    </td>
+                    @endif
                 </tr>
                 @endforeach
                 <tr>
                     <th>Total Amount :</th>
+                    @if(request('kasir') == 'all')
                     <th class="text-center">
                         <b>{{ App\Models\Penyewaan::whereBetween('created_at', [$from, $to])->sum('qty') }}</b>
                     </th>
                     <th colspan="2" class="text-end">
                         <b>{{ number_format(App\Models\Penyewaan::whereBetween('created_at', [$from, $to])->sum('jumlah'), 0, ',', '.') }}</b>
                     </th>
+                    @else
+                    <th class="text-center">
+                        <b>{{ App\Models\Penyewaan::where('user_id', request('kasir'))->whereBetween('created_at', [$from, $to])->sum('qty') }}</b>
+                    </th>
+                    <th colspan="2" class="text-end">
+                        <b>{{ number_format(App\Models\Penyewaan::where('user_id', request('kasir'))->whereBetween('created_at', [$from, $to])->sum('jumlah'), 0, ',', '.') }}</b>
+                    </th>
+                    @endif
                 </tr>
             </tbody>
         </table>

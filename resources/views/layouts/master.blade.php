@@ -104,7 +104,7 @@
                     </div>
 
                     @can('master-access')
-                    <div class="menu-item {{ request()->is('users*') ||  request()->is('terusan*') || request()->is('tickets*') || request()->is('sewa*') || request()->is('members*') ? 'active' : '' }} has-sub">
+                    <div class="menu-item {{ request()->is('users*') ||  request()->is('terusan*') || request()->is('tickets*') || request()->is('sewa*') ? 'active' : '' }} has-sub">
                         <a href="javascript:;" class="menu-link">
                             <div class="menu-icon">
                                 <i class="ion-ios-pulse"></i>
@@ -141,14 +141,18 @@
                                 </a>
                                 @endcan
                             </div>
-                            <div class="menu-item">
-                                @can('member-access')
-                                <a href="{{ route('members.index') }}" class="menu-link">
-                                    <div class="menu-text">Data Member</div>
-                                </a>
-                                @endcan
-                            </div>
                         </div>
+                    </div>
+                    @endcan
+
+                    @can('member-access')
+                    <div class="menu-item {{ request()->is('members*') ? 'active' : '' }}">
+                        <a href="{{ route('members.index') }}" class="menu-link">
+                            <div class="menu-icon">
+                                <i class="ion-ios-nutrition bg-blue"></i>
+                            </div>
+                            <div class="menu-text">Data Member</div>
+                        </a>
                     </div>
                     @endcan
 

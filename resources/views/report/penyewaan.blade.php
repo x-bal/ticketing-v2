@@ -36,6 +36,18 @@
                 </div>
 
                 <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="kasir">Kasir</label>
+                        <select name="kasir" id="kasir" class="form-control">
+                            <option value="all" selected>All</option>
+                            @foreach($users as $user)
+                            <option {{ request('kasir') == $user->id ? 'selected' : '' }} value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
                     <div class="form-group mt-1">
                         <button type="submit" class="btn btn-primary mt-3">Submit</button>
                     </div>
@@ -79,6 +91,7 @@
 <script>
     let from = $("#from").val();
     let to = $("#to").val();
+    let kasir = $("#kasir").val();
 
     var table = $('#datatable').DataTable({
         processing: true,
@@ -90,6 +103,7 @@
             data: {
                 "from": from,
                 "to": to,
+                "kasir": kasir,
             }
         },
         deferRender: true,

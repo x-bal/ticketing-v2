@@ -27,6 +27,7 @@
                     <th class="text-nowrap">Rfid</th>
                     <th class="text-nowrap">Name</th>
                     <th class="text-nowrap">No Ktp</th>
+                    <th class="text-nowrap">No Hp</th>
                     <th class="text-nowrap">Alamat</th>
                     <th class="text-nowrap">Action</th>
                 </tr>
@@ -69,6 +70,15 @@
                             <input type="number" name="no_ktp" id="no_ktp" class="form-control" value="">
 
                             @error('no_ktp')
+                            <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="no_hp">No Hp</label>
+                            <input type="number" name="no_hp" id="no_hp" class="form-control" value="">
+
+                            @error('no_hp')
                             <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
@@ -140,6 +150,10 @@
                     name: 'no_ktp'
                 },
                 {
+                    data: 'no_hp',
+                    name: 'no_hp'
+                },
+                {
                     data: 'alamat',
                     name: 'alamat'
                 },
@@ -179,6 +193,7 @@
                     $("#rfid").val(member.rfid)
                     $("#nama").val(member.nama)
                     $("#no_ktp").val(member.no_ktp)
+                    $("#no_hp").val(member.no_hp)
                     $("#alamat").val(member.alamat)
                     $("#tanggal_lahir").val(member.tgl_lahir)
                 }

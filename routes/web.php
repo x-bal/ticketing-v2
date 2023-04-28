@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/detail/qty', [DetailTransactionController::class, 'qty'])->name('detail.qty');
 
     Route::get('penyewaan/get', [PenyewaanController::class, 'get'])->name('penyewaan.list');
+    Route::get('penyewaan/{id}/print', [PenyewaanController::class, 'print'])->name('penyewaan.print');
     Route::resource('penyewaan', PenyewaanController::class);
 
     Route::get('topup/get', [TopupController::class, 'get'])->name('topup.list');

@@ -6,6 +6,7 @@ use App\Models\HistoryPenyewaan;
 use App\Models\Member;
 use App\Models\Penyewaan;
 use App\Models\Sewa;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -29,15 +30,20 @@ class PenyewaanController extends Controller
     public function get(Request $request)
     {
         if ($request->ajax()) {
-            $data = Penyewaan::latest();
+            if ($request->tanggal) {
+                $data = Penyewaan::whereDate('created_at', $request->tanggal)->orderBy('id', 'DESC');
+            } else {
+                $now = Carbon::now('Asia/Jakarta')->format('Y-m-d');
+                $data = Penyewaan::whereDate('created_at', $now)->orderBy('id', 'DESC');
+            }
 
             return DataTables::eloquent($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $actionBtn = '';
-                    //<a href="#modal-dialog" id="' . $row->id . '" class="btn btn-sm btn-success btn-edit" data-route="' . route('penyewaan.update', $row->id) . '" data-bs-toggle="modal">Edit</a>
+                    $actionBtn = '<a href="' . route('penyewaan.print', $row->id) . '" class="btn btn-sm btn-primary">Print</a> ';
+
                     if (auth()->user()->can('penyewaan-delete')) {
-                        $actionBtn = '<button type="button" data-route="' . route('penyewaan.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
+                        $actionBtn .= '<button type="button" data-route="' . route('penyewaan.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
                     }
                     return $actionBtn;
                 })
@@ -98,7 +104,7 @@ class PenyewaanController extends Controller
                     return back()->with('error', "Member tidak ditemukan");
                 }
             } else {
-                Penyewaan::create([
+                $sewa = Penyewaan::create([
                     'sewa_id' => $request->ticket,
                     'qty' => $request->qty,
                     'metode' => $request->metode,
@@ -109,12 +115,19 @@ class PenyewaanController extends Controller
 
                 DB::commit();
 
-                return back()->with('success', "Penyewaan berhasil");
+                return $this->print($sewa->id);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', $th->getMessage());
         }
+    }
+
+    public function print($id)
+    {
+        $penyewaan = Penyewaan::find($id);
+
+        return view('penyewaan.print', compact('penyewaan'));
     }
 
     public function destroy(Penyewaan $penyewaan)

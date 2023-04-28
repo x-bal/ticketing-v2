@@ -39,6 +39,7 @@
                     <th class="text-nowrap">Ticket</th>
                     <th class="text-nowrap">Harga</th>
                     <th class="text-nowrap">Jumlah</th>
+                    <th class="text-nowrap">Discount</th>
                     <th class="text-nowrap">Total</th>
                     <th class="text-nowrap">Status</th>
                     <th class="text-nowrap">Action</th>
@@ -238,6 +239,10 @@
             {
                 data: 'amount',
                 name: 'amount'
+            },
+            {
+                data: 'discount',
+                name: 'discount'
             },
             {
                 data: 'harga_ticket',

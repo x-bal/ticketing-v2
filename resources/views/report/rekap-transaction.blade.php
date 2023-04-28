@@ -30,9 +30,21 @@
                 <input type="date" name="to" id="to" class="form-control" value="{{ request('to') ?? Carbon\Carbon::now()->format('Y-m-d') }}">
             </div>
 
-            <div class="col-md-6 mt-1">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="kasir">Kasir</label>
+                    <select name="kasir" id="kasir" class="form-control">
+                        <option value="all" selected>All</option>
+                        @foreach($users as $user)
+                        <option {{ request('kasir') == $user->id ? 'selected' : '' }} value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3 mt-1">
                 <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                <a href="{{ route('transactions.export') }}" class="btn btn-success mt-3">Export</a>
+                <a href="{{ route('transactions.export') }}?from={{ request('from') }}&to={{ request('to') }}&kasir={{ request('kasir') }}" class="btn btn-success mt-3">Export</a>
             </div>
         </form>
 
@@ -52,22 +64,68 @@
                 @foreach($tickets as $ticket)
                 <tr>
                     <td>{{ $ticket->name }}</td>
-                    <td class="text-center">{{ App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->where('ticket_id', $ticket->id)->sum('qty') }}</td>
+
+                    @if(request('from') && request('to') && request('kasir') == 'all')
+                    @php
+                    $idtrx = App\Models\Transaction::where(['ticket_id' => $ticket->id, 'is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+                    @endphp
+                    @elseif(request('from') && request('to') && request('kasir') != 'all')
+                    @php
+                    $idtrx = App\Models\Transaction::where(['ticket_id' => $ticket->id, 'is_active' => 1, 'user_id' => request('kasir')])->whereBetween('created_at', [$from, $to])->pluck('id');
+                    @endphp
+                    @else
+                    @php
+                    $idtrx = App\Models\Transaction::where(['ticket_id' => $ticket->id, 'is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+                    @endphp
+                    @endif
+
+                    <td class="text-center">{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->sum('qty') }}</td>
                     <td class="text-center">{{ number_format($ticket->harga,0, ',', '.') }}</td>
                     <td class="text-end">
-                        {{ number_format(App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->where('ticket_id', $ticket->id)->sum('total'), 0, ',', '.') ?? 0 }}
+                        {{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->sum('total'), 0, ',', '.') ?? 0 }}
                     </td>
                 </tr>
                 @endforeach
+                @if(request('from') && request('to') && request('kasir') == 'all')
+                @php
+                $idtrxx = App\Models\Transaction::where(['is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+                @endphp
+                @elseif(request('from') && request('to') && request('kasir') != 'all')
+                @php
+                $idtrxx = App\Models\Transaction::where(['is_active' => 1, 'user_id' => request('kasir')])->whereBetween('created_at', [$from, $to])->pluck('id');
+                @endphp
+                @else
+                @php
+                $idtrxx = App\Models\Transaction::where(['is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+                @endphp
+                @endif
+
                 <tr>
-                    <th>Total Amount :</th>
+                    <th>Total Penjualan :</th>
                     <th class="text-center">
-                        <b>{{ App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->sum('qty') }}</b>
+                        <b>{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrxx)->sum('qty') }}</b>
                     </th>
-                    <th colspan="2" class="text-end">
-                        <b>{{ number_format(App\Models\DetailTransaction::whereBetween('created_at', [$from, $to])->whereIn('transaction_id', App\Models\Transaction::where('is_active', 1)->pluck('id'))->sum('total'), 0, ',', '.') }}</b>
+                    <th></th>
+                    <th class="text-end">
+                        <b>{{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $idtrxx)->sum('total'), 0, ',', '.') }}</b>
                     </th>
                 </tr>
+
+                <tr>
+                    <th colspan="3">Total Discount :</th>
+                    <th class="text-end">
+                        <b>{{ number_format(App\Models\Transaction::whereIn('id', $idtrxx)->sum('disc'), 0, ',', '.') }}</b>
+                    </th>
+                </tr>
+
+                <tr>
+                    <th colspan="3">Total Amount :</th>
+                    <th class="text-end">
+                        <b>{{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $idtrxx)->sum('total') - App\Models\Transaction::whereIn('id', $idtrxx)->sum('disc'), 0, ',', '.') }}</b>
+                    </th>
+                </tr>
+
+
             </tbody>
         </table>
     </div>

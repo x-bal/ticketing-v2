@@ -34,6 +34,17 @@
                         <input type="date" name="to" id="to" class="form-control" value="{{ request('to') }}">
                     </div>
                 </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="kasir">Kasir</label>
+                        <select name="kasir" id="kasir" class="form-control">
+                            <option value="all" selected>All</option>
+                            @foreach($users as $user)
+                            <option {{ request('kasir') == $user->id ? 'selected' : '' }} value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
 
                 <div class="col-md-3">
                     <div class="form-group mt-1">
@@ -51,6 +62,8 @@
                     <th class="text-nowrap">Ticket</th>
                     <th class="text-nowrap">Harga</th>
                     <th class="text-nowrap">Amount</th>
+                    <th class="text-nowrap">Jumlah</th>
+                    <th class="text-nowrap">Discount</th>
                     <th class="text-nowrap">Total</th>
                 </tr>
             </thead>
@@ -79,6 +92,7 @@
 <script>
     let from = $("#from").val();
     let to = $("#to").val();
+    let kasir = $("#kasir").val();
 
     var table = $('#datatable').DataTable({
         processing: true,
@@ -90,6 +104,7 @@
             data: {
                 "from": from,
                 "to": to,
+                "kasir": kasir
             }
         },
         deferRender: true,
@@ -133,6 +148,14 @@
             {
                 data: 'amount',
                 name: 'amount',
+            },
+            {
+                data: 'jumlah',
+                name: 'jumlah',
+            },
+            {
+                data: 'discount',
+                name: 'discount',
             },
             {
                 data: 'harga_ticket',

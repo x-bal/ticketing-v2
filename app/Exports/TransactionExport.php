@@ -9,12 +9,13 @@ use Maatwebsite\Excel\Concerns\FromView;
 
 class TransactionExport implements FromView
 {
-    protected $from, $to;
+    protected $from, $to, $kasir;
 
-    function __construct($from, $to,)
+    function __construct($from, $to, $kasir)
     {
         $this->from = $from;
         $this->to = $to;
+        $this->kasir = $kasir;
     }
 
     public function view(): View
@@ -25,6 +26,7 @@ class TransactionExport implements FromView
             'tickets' => $tickets,
             'from' => $this->from,
             'to' => $this->to,
+            'kasir' => $this->kasir,
         ]);
     }
 }

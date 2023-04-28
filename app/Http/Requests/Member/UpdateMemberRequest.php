@@ -28,6 +28,7 @@ class UpdateMemberRequest extends FormRequest
             'nama' => 'required|string',
             'alamat' => 'required|string',
             'no_ktp' => 'required|numeric',
+            'no_hp' => 'required|numeric',
             'tanggal_lahir' => 'required'
         ];
     }

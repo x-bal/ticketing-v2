@@ -75,13 +75,15 @@ class DetailTransactionController extends Controller
             if (!in_array($request->ticket, [11, 12])) {
                 $asuransi = DetailTransaction::where(['transaction_id' => $request->transaction, 'ticket_id' => 13])->first();
 
-                $asuransi->update([
-                    'qty' => $amount - $asuransi->qty,
-                ]);
+                if ($asuransi) {
+                    $asuransi->update([
+                        'qty' => $amount - $asuransi->qty,
+                    ]);
 
-                $asuransi->update([
-                    'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
-                ]);
+                    $asuransi->update([
+                        'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
+                    ]);
+                }
             }
 
             $detail = DetailTransaction::where('transaction_id', $request->transaction)->get();
@@ -113,22 +115,24 @@ class DetailTransactionController extends Controller
 
             $amount = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id])->count('qty');
 
-            if ($amount == 1) {
-                $asuransi->update([
-                    'qty' => ($asuransi->qty - $detailTransaction->qty) + 1,
-                ]);
+            if ($asuransi) {
+                if ($amount == 1) {
+                    $asuransi->update([
+                        'qty' => ($asuransi->qty - $detailTransaction->qty) + 1,
+                    ]);
 
-                $asuransi->update([
-                    'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
-                ]);
-            } else {
-                $asuransi->update([
-                    'qty' => $asuransi->qty - $detailTransaction->qty
-                ]);
+                    $asuransi->update([
+                        'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
+                    ]);
+                } else {
+                    $asuransi->update([
+                        'qty' => $asuransi->qty - $detailTransaction->qty
+                    ]);
 
-                $asuransi->update([
-                    'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
-                ]);
+                    $asuransi->update([
+                        'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
+                    ]);
+                }
             }
 
             $detailTransaction->delete();
@@ -162,10 +166,13 @@ class DetailTransactionController extends Controller
 
             $firstTrx = $transaction->detail()->whereNotIn('ticket_id', [13])->first();
 
+            $discount = request('discount') ?? 0;
+
             $transaction->update([
                 'ticket_id' => $firstTrx->ticket_id,
                 'amount' => $firstTrx->qty,
-                'is_active' => 1
+                'is_active' => 1,
+                'discount' => $discount,
             ]);
 
             $details = $transaction->detail()->whereNotIn('ticket_id', [11, 12])->get();
@@ -180,7 +187,8 @@ class DetailTransactionController extends Controller
                         'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('Ymd') . rand(100, 999),
                         'tipe' => 'group',
                         'amount' => $detail->qty,
-                        'is_active' => 1
+                        'is_active' => 1,
+                        'discount' => $discount
                     ]);
 
                     $detail->update(
@@ -189,27 +197,39 @@ class DetailTransactionController extends Controller
                         ]
                     );
 
-                    $newTrx->detail()->create([
-                        'ticket_id' => $jasaRaharja->id,
-                        'qty' => $newTrx->amount,
-                        'total' => $newTrx->amount * $jasaRaharja->harga
+                    $newTrx->update([
+                        'disc' => $newTrx->detail()->sum('total') * $discount / 100
                     ]);
+
+                    if ($asuransi) {
+                        $newTrx->detail()->create([
+                            'ticket_id' => $jasaRaharja->id,
+                            'qty' => $newTrx->amount,
+                            'total' => $newTrx->amount * $jasaRaharja->harga
+                        ]);
+                    }
 
                     $idtrx[] = $newTrx->id;
                 }
             }
 
+            $transaction->update([
+                'disc' => $transaction->detail()->sum('total') * $discount / 100
+            ]);
+
             $idtrx[] .= $transaction->id;
 
             $tickets = Transaction::whereIn('id', $idtrx)->get();
 
-            $transaction->detail()->create([
-                'ticket_id' => $jasaRaharja->id,
-                'qty' => $transaction->amount,
-                'total' => $transaction->amount * $jasaRaharja->harga
-            ]);
+            if ($asuransi) {
+                $transaction->detail()->create([
+                    'ticket_id' => $jasaRaharja->id,
+                    'qty' => $transaction->amount,
+                    'total' => $transaction->amount * $jasaRaharja->harga
+                ]);
 
-            $asuransi->delete();
+                $asuransi->delete();
+            }
 
             DB::commit();
 
@@ -237,13 +257,15 @@ class DetailTransactionController extends Controller
 
                 $asuransi = DetailTransaction::where(['transaction_id' => $detailTransaction->transaction_id, 'ticket_id' => 13])->first();
 
-                $asuransi->update([
-                    'qty' => $asuransi->qty - 1
-                ]);
+                if ($asuransi) {
+                    $asuransi->update([
+                        'qty' => $asuransi->qty - 1
+                    ]);
 
-                $asuransi->update([
-                    'total' => $asuransi->qty * $asuransi->ticket->harga
-                ]);
+                    $asuransi->update([
+                        'total' => $asuransi->qty * $asuransi->ticket->harga
+                    ]);
+                }
             }
 
             DB::commit();

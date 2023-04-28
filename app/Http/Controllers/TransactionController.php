@@ -42,7 +42,7 @@ class TransactionController extends Controller
 
             return DataTables::eloquent($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row) {
+                ->editColumn('action', function ($row) {
                     $actionBtn = '<a href="' . route("transactions.print", $row->id) . '" class="btn btn-sm btn-primary">Print</a> ';
                     if (auth()->user()->can('transaction-delete')) {
                         $actionBtn .= '<button type="button" data-route="' . route('transactions.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm">Delete</button>';
@@ -50,14 +50,21 @@ class TransactionController extends Controller
 
                     return $actionBtn;
                 })
-                ->addColumn('ticket', function ($row) {
+                ->editColumn('ticket', function ($row) {
                     return $row->ticket->name;
                 })
-                ->addColumn('harga', function ($row) {
+                ->editColumn('harga', function ($row) {
                     return 'Rp. ' . number_format($row->ticket->harga, 0, ',', '.');
                 })
+                ->editColumn('disc', function ($row) {
+                    return $row->discount . '%';
+                })
+                ->editColumn('discount', function ($row) {
+                    return 'Rp. ' . number_format($row->detail()->sum('total') * $row->discount / 100, 0, ',', '.');
+                })
                 ->editColumn('harga_ticket', function ($row) {
-                    return 'Rp. ' . number_format($row->detail()->sum('total'), 0, ',', '.');
+                    $disc = $row->detail()->sum('total') * $row->discount / 100;
+                    return 'Rp. ' . number_format($row->detail()->sum('total') - $disc, 0, ',', '.');
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -97,16 +104,18 @@ class TransactionController extends Controller
                 'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(100, 999)
             ]);
 
-            DetailTransaction::create([
-                'transaction_id' => $transaction->id,
-                'ticket_id' => 13,
-                'qty' => 0,
-                'total' => 0
-            ]);
+            // DetailTransaction::create([
+            //     'transaction_id' => $transaction->id,
+            //     'ticket_id' => 13,
+            //     'qty' => 0,
+            //     'total' => 0
+            // ]);
         }
 
+        $total = $transaction->detail()->sum('total');
 
-        return view('transaction.form', compact('title', 'breadcrumbs', 'action', 'method', 'transaction', 'tickets'));
+
+        return view('transaction.form', compact('title', 'breadcrumbs', 'action', 'method', 'transaction', 'tickets', 'total'));
     }
 
     public function store(CreateTransactionRequest $request)
