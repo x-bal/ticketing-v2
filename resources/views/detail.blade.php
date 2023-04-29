@@ -11,7 +11,7 @@
     <div id="bodyData">
         <h1 style="font-size: 75px;margin-top:0px;margin-bottom:0px"> SELAMAT DATANG</h1>
         <center>
-            <img src="{{ asset('/images/heha.png') }}" width="480" width="480" alt="The Logo" class="brand-image" style="opacity: .8;text-align:center;margin-top:100px">
+            <img src="{{ asset('/images/rio.png') }}" width="480" width="480" alt="The Logo" class="brand-image" style="opacity: .8;text-align:center;margin-top:50px">
         </center>
     </div>
 
@@ -48,11 +48,10 @@
                     if (between < 60000) {
                         bodyData = `
                     <center>
-                    <img src="{{ asset('/images/heha.png') }}"width="300" width="300" alt="The Logo" class="brand-image" style="opacity: .8;text-align:center;margin-top:50px">
+                    <img src="{{ asset('/images/rio.png') }}"width="300" width="300" alt="The Logo" class="brand-image" style="opacity: .8;text-align:center;margin-top:50px">
                     </center>
                     <h1>COUNTING TICKET GATE ` + gate + `<h1>
                         </br>
-                        <h1 style="font-size: 50px;">${data.nama_customer}</h1>
                         
                         <h1 style="font-size: 100px;">${data.amount-data.amount_scanned}</h1>
                         
@@ -62,7 +61,7 @@
                     } else {
                         bodyData = `<br><br><br><h1 style="font-size: 75px;margin-top:0px;margin-bottom:0px"> SELAMAT DATANG</h1>
                     <center>
-                    <img src="{{ asset('/images/heha.png') }}"width="480" width="480" alt="The Logo" class="brand-image" style="opacity: .8;text-align:center;margin-top:100px">
+                    <img src="{{ asset('/images/rio.png') }}"width="480" width="480" alt="The Logo" class="brand-image" style="opacity: .8;text-align:center;margin-top:50px">
                     </center>
                     `
                         $("#bodyData").html(bodyData);

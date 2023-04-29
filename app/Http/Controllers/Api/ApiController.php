@@ -25,7 +25,7 @@ class ApiController extends Controller
         $transaction = Transaction::where('status', 'open')
             ->where('tipe', 'group')
             ->where('gate', $request->gate)
-            ->select(['ticket_code', 'amount', 'amount_scanned', 'nama_customer', 'updated_at'])
+            ->select(['ticket_code', 'amount', 'amount_scanned', 'updated_at'])
             ->orderBy('updated_at', 'desc')
             ->first();
 
@@ -245,5 +245,10 @@ class ApiController extends Controller
                 "status" => 'close',
             ]);
         }
+    }
+
+    public function detailGroup()
+    {
+        return view('detail');
     }
 }

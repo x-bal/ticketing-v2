@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\TicketController as ApiTicketController;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DetailTransactionController;
 use App\Http\Controllers\MemberController;
@@ -91,7 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::get('export-penyewaan', [ReportController::class, 'exportPenyewaan'])->name('penyewaan.export');
 });
 
-Route::get('/detail-group', [ApiTicketController::class, 'detailGroup']);
+Route::get('/detail-group', [ApiController::class, 'detailGroup']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

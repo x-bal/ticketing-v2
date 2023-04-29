@@ -24,7 +24,7 @@ date_default_timezone_set('Asia/Jakarta')
         <div style="max-width:72mm !important;  margin: 0 auto 0 auto; vertical-align: top; border-style: solid;border-width: 1px;">
             <div style="widht:72mm; margin-top:10px;margin-bottom:0px">
                 <div style="float: left;">
-                    <img src="{{ asset('/images/heha.png') }}" width="80" width="80" alt="The Logo" class="brand-image" style="opacity: .8">
+                    <img src="{{ asset('/images/rio.png') }}" width="50" alt="The Logo" class="brand-image" style="opacity: .8; margin-top: -15px !important;">
                 </div>
                 <div style="float: right; margin-right:5px">
                     <p style="font-size: 8.5pt;text-transform: uppercase; margin: 1px 1px 1px 1px;">RIO WATERPARK</p>
@@ -76,7 +76,7 @@ date_default_timezone_set('Asia/Jakarta')
                 <span>{{ $transaction->ticket_code }}</span>
             </p>
             <hr style="border-style: dashed;">
-            <p style="font-size:8pt;text-align: center;margin-bottom:0px">RIO WATERPARK " Barcode hanya buat buka gate "</p>
+            <p style="font-size:8pt;text-align: center;margin-bottom:0px">RIO WATERPARK " QRCode hanya buat buka gate "</p>
         </div>
     </div>
 

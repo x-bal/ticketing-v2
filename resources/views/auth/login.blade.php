@@ -79,8 +79,11 @@
                             @enderror
                         </div>
 
-                        <div class="mb-15px">
-                            <button type="submit" class="btn btn-success d-block h-45px w-100 btn-lg fs-14px">Sign me in</button>
+                        <div class="mb-15px text-center">
+                            <button type="submit" class="btn btn-success mb-3 d-block h-45px w-100 btn-lg fs-14px">Sign me in</button>
+
+                            <a href="/detail-group">Detail Count</a>
+
                         </div>
                         <hr class="bg-gray-600 opacity-2" />
                         <div class="text-gray-600 text-center text-gray-500-darker mb-0">
