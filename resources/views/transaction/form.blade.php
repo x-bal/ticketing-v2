@@ -18,65 +18,78 @@
     </div>
 
     <div class="panel-body">
-        <div class="row">
-            <h2 class="mb-3">Total Price : <span id="price">Rp. {{ number_format($transaction->detail()->sum('total'), 0, ',','.') }}</span></h2>
-            <div class="col-md-6">
-                <table class="table table-bordered" id="datatable">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Name</th>
-                            <th>Qty</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                </table>
+        <form action="{{ route('detail.save', $transaction->id) }}" method="post">
+            @csrf
+            <div class="row">
+                <h2 class="mb-3">Total Price : <span id="price">Rp. {{ number_format($transaction->detail()->sum('total'), 0, ',','.') }}</span></h2>
+                <div class="col-md-6">
+                    <table class="table table-bordered" id="datatable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                    </table>
 
-                <div class="form-group mb-3">
-                    <label for="discount">Discount</label><br>
-                    <button type="button" class="btn btn-sm btn-success btn-discount" id="10">10%</button>
-                    <button type="button" class="btn btn-sm btn-success btn-discount" id="20">20%</button>
-                    <button type="button" class="btn btn-sm btn-success btn-discount" id="30">30%</button>
-                    <button type="button" class="btn btn-sm btn-success btn-discount" id="50">50%</button>
+                    <div class="form-group mb-3">
+                        <label for="discount">Discount</label><br>
+                        <button type="button" class="btn btn-sm btn-success btn-discount" id="10">10%</button>
+                        <button type="button" class="btn btn-sm btn-success btn-discount" id="20">20%</button>
+                        <button type="button" class="btn btn-sm btn-success btn-discount" id="30">30%</button>
+                        <button type="button" class="btn btn-sm btn-success btn-discount" id="50">50%</button>
 
-                    <input type="number" name="discount" id="discount" class="form-control mt-3" value="0" readonly>
-                    <input type="hidden" name="disc" id="disc" value="0">
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="bayar">Bayar</label>
-                    <input type="text" name="bayar" id="bayar" class="form-control" value="0" autofocus>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="kembali">Kembali</label>
-                    <input type="text" name="kembali" id="kembali" class="form-control" value="0" readonly>
-                </div>
-
-                <input type="hidden" name="totalPrice" value="{{ $transaction->detail()->sum('total') }}" id="totalPrice">
-
-                <div class="form-group">
-                    <a href="{{ route('detail.save', $transaction->id) }}" class="btn btn-primary btn-save">Submit</a>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="content-ticket row">
-                    @foreach($tickets as $ticket)
-                    <div class="col-md-4 mb-2">
-                        <button type="button" id="{{ $ticket->id }}" class="btn btn-primary text-center w-100 h-100 btn-ticket">
-                            <span>
-                                <span class="d-block" style="text-transform: uppercase;"><b>{{ $ticket->name }}</b></span>
-                                <span class="d-block fs-12px opacity-7">{{ number_format($ticket->harga,0, ',', '.') }}</span>
-                            </span>
-                        </button>
+                        <input type="number" name="discount" id="discount" class="form-control mt-3" value="0" readonly>
+                        <input type="hidden" name="disc" id="disc" value="0">
                     </div>
-                    @endforeach
+
+                    <div class="form-group mb-3">
+                        <label for="metode">Metode Pembayaran</label>
+                        <select name="metode" id="metode" class="form-control">
+                            <option value="cash">Cash</option>
+                            <option value="debit">Debit</option>
+                            <option value="kredit">Kredit</option>
+                            <option value="qris">QRIS</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="bayar">Bayar</label>
+                        <input type="text" name="bayar" id="bayar" class="form-control" value="0" autofocus>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="kembali">Kembali</label>
+                        <input type="text" name="kembali" id="kembali" class="form-control" value="0" readonly>
+                    </div>
+
+                    <input type="hidden" name="totalPrice" value="{{ $transaction->detail()->sum('total') }}" id="totalPrice">
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-save">Submit</button>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="content-ticket row">
+                        @foreach($tickets as $ticket)
+                        <div class="col-md-4 mb-2">
+                            <button type="button" id="{{ $ticket->id }}" class="btn btn-primary text-center w-100 h-100 btn-ticket">
+                                <span>
+                                    <span class="d-block" style="text-transform: uppercase;"><b>{{ $ticket->name }}</b></span>
+                                    <span class="d-block fs-12px opacity-7">{{ number_format($ticket->harga,0, ',', '.') }}</span>
+                                </span>
+                            </button>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -254,8 +267,8 @@
             let disc = $(this).attr('id');
             $("#discount").val(disc)
             let total = localStorage.getItem("total")
-            $(".btn-save").removeAttr("href")
-            $(".btn-save").attr("href", "{{ route('detail.save', $transaction->id) }}?discount=" + disc)
+            // $(".btn-save").removeAttr("href")
+            // $(".btn-save").attr("href", "{{ route('detail.save', $transaction->id) }}?discount=" + disc)
 
             let diskon = (disc * total / 100)
             hasil = total - diskon;

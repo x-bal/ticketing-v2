@@ -173,6 +173,7 @@ class DetailTransactionController extends Controller
                 'amount' => $firstTrx->qty,
                 'is_active' => 1,
                 'discount' => $discount,
+                'metode' => request('metode')
             ]);
 
             $details = $transaction->detail()->whereNotIn('ticket_id', [11, 12])->get();
@@ -188,7 +189,8 @@ class DetailTransactionController extends Controller
                         'tipe' => 'group',
                         'amount' => $detail->qty,
                         'is_active' => 1,
-                        'discount' => $discount
+                        'discount' => $discount,
+                        'metode' => request('metode')
                     ]);
 
                     $detail->update(

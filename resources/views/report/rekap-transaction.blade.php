@@ -86,17 +86,30 @@
                     </td>
                 </tr>
                 @endforeach
+
                 @if(request('from') && request('to') && request('kasir') == 'all')
                 @php
                 $idtrxx = App\Models\Transaction::where(['is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $cashid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'cash'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $debitid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'debit'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $kreditid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'kredit'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $qrisid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'qris'])->whereBetween('created_at', [$from, $to])->pluck('id');
                 @endphp
                 @elseif(request('from') && request('to') && request('kasir') != 'all')
                 @php
                 $idtrxx = App\Models\Transaction::where(['is_active' => 1, 'user_id' => request('kasir')])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $cashid = App\Models\Transaction::where(['is_active' => 1, 'user_id' => request('kasir'), 'metode' => 'cash'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $debitid = App\Models\Transaction::where(['is_active' => 1, 'user_id' => request('kasir'), 'metode' => 'debit'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $kreditid = App\Models\Transaction::where(['is_active' => 1, 'user_id' => request('kasir'), 'metode' => 'kredit'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $qrisid = App\Models\Transaction::where(['is_active' => 1, 'user_id' => request('kasir'), 'metode' => 'qris'])->whereBetween('created_at', [$from, $to])->pluck('id');
                 @endphp
                 @else
                 @php
                 $idtrxx = App\Models\Transaction::where(['is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $cashid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'cash'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $debitid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'debit'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $kreditid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'kredit'])->whereBetween('created_at', [$from, $to])->pluck('id');
+                $qrisid = App\Models\Transaction::where(['is_active' => 1, 'metode' => 'qris'])->whereBetween('created_at', [$from, $to])->pluck('id');
                 @endphp
                 @endif
 
@@ -115,6 +128,36 @@
                     <th colspan="3">Total Discount :</th>
                     <th class="text-end">
                         <b>{{ number_format(App\Models\Transaction::whereIn('id', $idtrxx)->sum('disc'), 0, ',', '.') }}</b>
+                    </th>
+                </tr>
+
+                <tr>
+                    <th>Metode Pembayaran :</th>
+                    <th class="text-center">Cash</th>
+                    <th colspan="2" class="text-end">
+                        {{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $cashid)->sum('total'), 0, ',', '.') }}
+                    </th>
+                </tr>
+
+                <tr>
+                    <th rowspan="3"></th>
+                    <th class="text-center">Debit</th>
+                    <th colspan="2" class="text-end">
+                        {{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $debitid)->sum('total'), 0, ',', '.') }}
+                    </th>
+                </tr>
+
+                <tr>
+                    <th class="text-center">Kredit</th>
+                    <th colspan="2" class="text-end">
+                        {{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $kreditid)->sum('total'), 0, ',', '.') }}
+                    </th>
+                </tr>
+
+                <tr>
+                    <th class="text-center">QRIS</th>
+                    <th colspan="2" class="text-end">
+                        {{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $qrisid)->sum('total'), 0, ',', '.') }}
                     </th>
                 </tr>
 
