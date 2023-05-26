@@ -52,7 +52,7 @@ class ReportController extends Controller
                     return $row->ticket->name ?? '-';
                 })
                 ->editColumn('harga', function ($row) {
-                    return 'Rp. ' . number_format($row->ticket->harga, 0, ',', '.') ?? 0;
+                    return 'Rp. ' . number_format($row->ticket->harga ?? 0, 0, ',', '.');
                 })
                 ->editColumn('jumlah', function ($row) {
                     return 'Rp. ' . number_format($row->detail()->sum('total'), 0, ',', '.') ?? 0;
