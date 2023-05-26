@@ -49,20 +49,20 @@ class ReportController extends Controller
                     return Carbon::parse($row->created_at)->format('d/m/Y H:i:s');
                 })
                 ->editColumn('ticket', function ($row) {
-                    return $row->ticket->name;
+                    return $row->ticket->name ?? '-';
                 })
                 ->editColumn('harga', function ($row) {
-                    return 'Rp. ' . number_format($row->ticket->harga, 0, ',', '.');
+                    return 'Rp. ' . number_format($row->ticket->harga, 0, ',', '.') ?? 0;
                 })
                 ->editColumn('jumlah', function ($row) {
-                    return 'Rp. ' . number_format($row->detail()->sum('total'), 0, ',', '.');
+                    return 'Rp. ' . number_format($row->detail()->sum('total'), 0, ',', '.') ?? 0;
                 })
                 ->editColumn('discount', function ($row) {
-                    return 'Rp. ' . number_format($row->detail()->sum('total') * $row->discount / 100, 0, ',', '.');
+                    return 'Rp. ' . number_format($row->detail()->sum('total') * $row->discount / 100, 0, ',', '.') ?? 0;
                 })
                 ->editColumn('harga_ticket', function ($row) {
                     $disc = $row->detail()->sum('total') * $row->discount / 100;
-                    return 'Rp. ' . number_format($row->detail()->sum('total') - $disc, 0, ',', '.');
+                    return 'Rp. ' . number_format($row->detail()->sum('total') - $disc, 0, ',', '.') ?? 0;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
