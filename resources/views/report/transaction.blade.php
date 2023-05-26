@@ -134,12 +134,12 @@
                 name: 'tanggal'
             },
             {
-                data: 'ticket',
-                name: 'ticket'
-            },
-            {
                 data: 'ticket_code',
                 name: 'ticket_code'
+            },
+            {
+                data: 'ticket',
+                name: 'ticket'
             },
             {
                 data: 'harga',
