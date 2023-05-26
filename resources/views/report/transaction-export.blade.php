@@ -17,22 +17,22 @@
 
             @if($kasir == 'all')
             @php
-            $idtrx = App\Models\Transaction::where(['ticket_id' => $ticket->id, 'is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+            $idtrx = App\Models\Transaction::where(['is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
             @endphp
             @elseif($kasir != 'all')
             @php
-            $idtrx = App\Models\Transaction::where(['ticket_id' => $ticket->id, 'is_active' => 1, 'user_id' => $kasir])->whereBetween('created_at', [$from, $to])->pluck('id');
+            $idtrx = App\Models\Transaction::where(['is_active' => 1, 'user_id' => $kasir])->whereBetween('created_at', [$from, $to])->pluck('id');
             @endphp
             @else
             @php
-            $idtrx = App\Models\Transaction::where(['ticket_id' => $ticket->id, 'is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
+            $idtrx = App\Models\Transaction::where(['is_active' => 1])->whereBetween('created_at', [$from, $to])->pluck('id');
             @endphp
             @endif
 
-            <td class="text-center">{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->sum('qty') }}</td>
+            <td class="text-center">{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->where('ticket_id', $ticket->id)->sum('qty') }}</td>
             <td class="text-center">{{ $ticket->harga }}</td>
             <td class="text-end">
-                {{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->sum('total') ?? 0 }}
+                {{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->where('ticket_id', $ticket->id)->sum('total') ?? 0 }}
             </td>
         </tr>
         @endforeach

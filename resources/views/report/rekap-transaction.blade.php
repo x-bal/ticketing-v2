@@ -79,10 +79,10 @@
                     @endphp
                     @endif
 
-                    <td class="text-center">{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->sum('qty') }}</td>
+                    <td class="text-center">{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->where('ticket_id', $ticket->id)->sum('qty') }}</td>
                     <td class="text-center">{{ number_format($ticket->harga,0, ',', '.') }}</td>
                     <td class="text-end">
-                        {{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->sum('total'), 0, ',', '.') ?? 0 }}
+                        {{ number_format(App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->where('ticket_id', $ticket->id)->sum('total'), 0, ',', '.') ?? 0 }}
                     </td>
                 </tr>
                 @endforeach
@@ -116,7 +116,7 @@
                 <tr>
                     <th>Total Penjualan :</th>
                     <th class="text-center">
-                        <b>{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrxx)->sum('qty') }}</b>
+                        <b>{{ App\Models\DetailTransaction::whereIn('transaction_id', $idtrx)->sum('qty') }}</b>
                     </th>
                     <th></th>
                     <th class="text-end">
