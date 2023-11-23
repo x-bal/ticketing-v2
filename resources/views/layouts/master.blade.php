@@ -151,7 +151,7 @@
                             <div class="menu-icon">
                                 <i class="ion-ios-nutrition bg-blue"></i>
                             </div>
-                            <div class="menu-text">Data Member</div>
+                            <div class="menu-text">Data Member <span class="menu-label bg-danger fW-800">{{ App\Models\Member::where('tgl_expired', '<=', Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d'))->count() }}</span></div>
                         </a>
                     </div>
                     @endcan

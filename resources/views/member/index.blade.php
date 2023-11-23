@@ -29,6 +29,7 @@
                     <th class="text-nowrap">No Ktp</th>
                     <th class="text-nowrap">No Hp</th>
                     <th class="text-nowrap">Alamat</th>
+                    <th class="text-nowrap">Status</th>
                     <th class="text-nowrap">Action</th>
                 </tr>
             </thead>
@@ -158,8 +159,16 @@
                     name: 'alamat'
                 },
                 {
+                    data: 'expired',
+                    name: 'expired',
+                    sortable: false,
+                    searchable: false
+                },
+                {
                     data: 'action',
                     name: 'action',
+                    sortable: false,
+                    searchable: false
                 },
             ]
         });

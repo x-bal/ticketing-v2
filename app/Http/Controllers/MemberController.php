@@ -39,7 +39,14 @@ class MemberController extends Controller
                 ->editColumn('harga', function ($row) {
                     return 'Rp. ' . number_format($row->harga, 0, ',', '.');
                 })
-                ->rawColumns(['action'])
+                ->editColumn('expired', function ($row) {
+                    if (Carbon::now('Asia/Jakarta')->format('Y-m-d') > $row->tgl_expired) {
+                        return '<span class="badge bg-danger">Expired</span>';
+                    } else {
+                        return '<span class="badge bg-success">Active</span>';
+                    }
+                })
+                ->rawColumns(['action', 'expired'])
                 ->make(true);
         }
     }
