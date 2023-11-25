@@ -3,6 +3,12 @@
 @push('style')
 <link href="{{ asset('/') }}plugins/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
 <link href="{{ asset('/') }}plugins/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" />
+
+<style>
+    .btn-expired {
+        cursor: pointer;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -110,153 +116,190 @@
             </div>
         </div>
     </div>
+</div>
 
-    <form action="" class="d-none" id="form-delete" method="post">
-        @csrf
-        @method('DELETE')
-    </form>
-    @endsection
+<form action="" class="d-none" id="form-delete" method="post">
+    @csrf
+    @method('DELETE')
+</form>
+<form action="" class="d-none" id="form-expired" method="post">
+    @csrf
+</form>
+@endsection
 
-    @push('script')
-    <script src="{{ asset('/') }}plugins/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="{{ asset('/') }}plugins/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="{{ asset('/') }}plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="{{ asset('/') }}plugins/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
-    <script src="{{ asset('/') }}plugins/sweetalert/dist/sweetalert.min.js"></script>
+@push('script')
+<script src="{{ asset('/') }}plugins/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="{{ asset('/') }}plugins/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<script src="{{ asset('/') }}plugins/sweetalert/dist/sweetalert.min.js"></script>
 
-    <script>
-        var table = $('#datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            responsive: true,
-            ajax: "{{ route('members.list') }}",
-            deferRender: true,
-            pagination: true,
-            columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    sortable: false,
-                    searchable: false
-                },
-                {
-                    data: 'rfid',
-                    name: 'rfid'
-                },
-                {
-                    data: 'nama',
-                    name: 'nama'
-                },
-                {
-                    data: 'no_ktp',
-                    name: 'no_ktp'
-                },
-                {
-                    data: 'no_hp',
-                    name: 'no_hp'
-                },
-                {
-                    data: 'alamat',
-                    name: 'alamat'
-                },
-                {
-                    data: 'expired',
-                    name: 'expired',
-                    sortable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    sortable: false,
-                    searchable: false
-                },
-            ]
-        });
+<script>
+    var table = $('#datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        responsive: true,
+        ajax: "{{ route('members.list') }}",
+        deferRender: true,
+        pagination: true,
+        columns: [{
+                data: 'DT_RowIndex',
+                name: 'DT_RowIndex',
+                sortable: false,
+                searchable: false
+            },
+            {
+                data: 'rfid',
+                name: 'rfid'
+            },
+            {
+                data: 'nama',
+                name: 'nama'
+            },
+            {
+                data: 'no_ktp',
+                name: 'no_ktp'
+            },
+            {
+                data: 'no_hp',
+                name: 'no_hp'
+            },
+            {
+                data: 'alamat',
+                name: 'alamat'
+            },
+            {
+                data: 'expired',
+                name: 'expired',
+                sortable: false,
+                searchable: false
+            },
+            {
+                data: 'action',
+                name: 'action',
+                sortable: false,
+                searchable: false
+            },
+        ]
+    });
 
-        $("#btn-add").on('click', function() {
-            $("#rfid").removeAttr('disabled');
-            let route = $(this).attr('data-route')
-            $("#form-member").attr('action', route)
-        })
+    $("#btn-add").on('click', function() {
+        $("#rfid").removeAttr('disabled');
+        let route = $(this).attr('data-route')
+        $("#form-member").attr('action', route)
+    })
 
-        $("#btn-close").on('click', function() {
-            $("#form-member").removeAttr('action')
-        })
+    $("#btn-close").on('click', function() {
+        $("#form-member").removeAttr('action')
+    })
 
-        $("#datatable").on('click', '.btn-edit', function() {
-            $("#rfid").attr('disabled', 'disabled');
-            let route = $(this).attr('data-route')
-            let id = $(this).attr('id')
+    $("#datatable").on('click', '.btn-edit', function() {
+        $("#rfid").attr('disabled', 'disabled');
+        let route = $(this).attr('data-route')
+        let id = $(this).attr('id')
 
-            $("#form-member").attr('action', route)
-            $("#form-member").append(`<input type="hidden" name="_method" value="PUT">`);
+        $("#form-member").attr('action', route)
+        $("#form-member").append(`<input type="hidden" name="_method" value="PUT">`);
 
-            $.ajax({
-                url: "/members/" + id,
-                type: 'GET',
-                method: 'GET',
-                success: function(response) {
-                    console.log(response)
-                    let member = response.member;
+        $.ajax({
+            url: "/members/" + id,
+            type: 'GET',
+            method: 'GET',
+            success: function(response) {
+                console.log(response)
+                let member = response.member;
 
-                    $("#rfid").val(member.rfid)
-                    $("#nama").val(member.nama)
-                    $("#no_ktp").val(member.no_ktp)
-                    $("#no_hp").val(member.no_hp)
-                    $("#alamat").val(member.alamat)
-                    $("#tanggal_lahir").val(member.tgl_lahir)
-                }
-            })
-        })
-
-        $("#datatable").on('click', '.btn-delete', function(e) {
-            e.preventDefault();
-            let route = $(this).attr('data-route')
-            $("#form-delete").attr('action', route)
-
-            swal({
-                title: 'Hapus data member?',
-                text: 'Menghapus member bersifat permanen.',
-                icon: 'error',
-                buttons: {
-                    cancel: {
-                        text: 'Cancel',
-                        value: null,
-                        visible: true,
-                        className: 'btn btn-default',
-                        closeModal: true,
-                    },
-                    confirm: {
-                        text: 'Yes',
-                        value: true,
-                        visible: true,
-                        className: 'btn btn-danger',
-                        closeModal: true
-                    }
-                }
-            }).then((result) => {
-                if (result) {
-                    $("#form-delete").submit()
-                } else {
-                    $("#form-delete").attr('action', '')
-                }
-            });
-        })
-
-        // $('#form-member').on('keyup keypress', function(e) {
-        //     var keyCode = e.keyCode || e.which;
-        //     if (keyCode === 13) {
-        //         e.preventDefault();
-        //         return false;
-        //     }
-        // });
-
-        $("#rfid").on('keypress', function(e) {
-            var keyCode = e.keyCode || e.which;
-            if (keyCode === 13) {
-                e.preventDefault();
-                return false;
+                $("#rfid").val(member.rfid)
+                $("#nama").val(member.nama)
+                $("#no_ktp").val(member.no_ktp)
+                $("#no_hp").val(member.no_hp)
+                $("#alamat").val(member.alamat)
+                $("#tanggal_lahir").val(member.tgl_lahir)
             }
         })
-    </script>
-    @endpush
+    })
+
+    $("#datatable").on('click', '.btn-delete', function(e) {
+        e.preventDefault();
+        let route = $(this).attr('data-route')
+        $("#form-delete").attr('action', route)
+
+        swal({
+            title: 'Hapus data member?',
+            text: 'Menghapus member bersifat permanen.',
+            icon: 'error',
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-danger',
+                    closeModal: true
+                }
+            }
+        }).then((result) => {
+            if (result) {
+                $("#form-delete").submit()
+            } else {
+                $("#form-delete").attr('action', '')
+            }
+        });
+    })
+
+    $("#datatable").on('click', '.btn-expired', function(e) {
+        e.preventDefault();
+        let route = $(this).attr('data-route')
+        $("#form-expired").attr('action', route)
+
+        swal({
+            title: 'Perpanjang data member?',
+            icon: 'warning',
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-primary',
+                    closeModal: true
+                }
+            }
+        }).then((result) => {
+            if (result) {
+                $("#form-expired").submit()
+            } else {
+                $("#form-expired").attr('action', '')
+            }
+        });
+    })
+
+    // $('#form-member').on('keyup keypress', function(e) {
+    //     var keyCode = e.keyCode || e.which;
+    //     if (keyCode === 13) {
+    //         e.preventDefault();
+    //         return false;
+    //     }
+    // });
+
+    $("#rfid").on('keypress', function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    })
+</script>
+@endpush

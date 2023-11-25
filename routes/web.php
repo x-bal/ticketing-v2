@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('sewa', SewaController::class);
 
     Route::get('members/get', [MemberController::class, 'get'])->name('members.list');
+    Route::post('member{member:id}/expired', [MemberController::class, 'expired'])->name('members.expired');
     Route::resource('members', MemberController::class);
 
     Route::get('transactions/get', [TransactionController::class, 'get'])->name('transactions.list');

@@ -41,9 +41,9 @@ class MemberController extends Controller
                 })
                 ->editColumn('expired', function ($row) {
                     if (Carbon::now('Asia/Jakarta')->format('Y-m-d') > $row->tgl_expired) {
-                        return '<span class="badge bg-danger">Expired</span>';
+                        return '<span class="badge bg-danger btn-expired fs-12px" data-route="' . route('members.expired', $row->id) . '">Expired</span>';
                     } else {
-                        return '<span class="badge bg-success">Active</span>';
+                        return '<span class="badge fs-12px bg-success">Active</span>';
                     }
                 })
                 ->rawColumns(['action', 'expired'])
@@ -129,6 +129,21 @@ class MemberController extends Controller
             return response()->json([
                 'status' => 'error',
             ]);
+        }
+    }
+
+    function expired(Member $member)
+    {
+        try {
+            DB::beginTransaction();
+
+            $member->update(['tgl_expired' => Carbon::now('Asia/Jakarta')->addMonth(6)->format('Y-m-d')]);
+
+            DB::commit();
+            return redirect()->route('members.index')->with('success', "Member {$member->nama} berhasil diperpanjang");
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('error', $th->getMessage());
         }
     }
 }
