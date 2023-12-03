@@ -101,3 +101,5 @@ Route::get('reset', function () {
     Artisan::call('cache:clear');
     Artisan::call('optimize:clear');
 });
+
+Route::get('test-print', [DetailTransactionController::class, 'testPrint']);

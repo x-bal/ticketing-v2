@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class DetailTransactionController extends Controller
 {
@@ -20,7 +22,7 @@ class DetailTransactionController extends Controller
             return DataTables::eloquent($data)
                 ->addIndexColumn()
                 ->editColumn('action', function ($row) {
-                    $actionBtn = '<button type="button" data-route="' . route('detail.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm"><i class="ion-ios-close"></i></button> <a href="' . route('detail.remove', $row->id) . '" class="btn btn-success btn-sm"><i class="ion-ios-remove"></i></a>';
+                    $actionBtn = '<button type="button" data-route="' . route('detail.destroy', $row->id) . '" class="delete btn btn-danger btn-delete btn-sm"><i class="fas fa-trash"></i></button>';
                     return $actionBtn;
                 })
                 ->editColumn('ticket', function ($row) {
@@ -47,44 +49,43 @@ class DetailTransactionController extends Controller
 
             $cek = DetailTransaction::where(['transaction_id' => $request->transaction, 'ticket_id' => $request->ticket])->first();
 
-            if ($cek) {
-                $qty = $cek->qty;
+            // if ($cek) {
+            //     $qty = $cek->qty;
 
-                $cek->update([
-                    'qty' => $qty += 1
-                ]);
+            //     $cek->update([
+            //         'qty' => $qty += 1
+            //     ]);
 
-                $cek->update([
-                    'total' => Ticket::find($request->ticket)->harga * $cek->qty
-                ]);
-            } else {
-                $trx = DetailTransaction::create([
-                    'transaction_id' => $request->transaction,
-                    'ticket_id' => $request->ticket,
-                    'qty' => 1,
-                    'total' => 0
-                ]);
+            //     $cek->update([
+            //         'total' => Ticket::find($request->ticket)->harga * $cek->qty
+            //     ]);
+            // } else {
+            DetailTransaction::create([
+                'transaction_id' => $request->transaction,
+                'ticket_id' => $request->ticket,
+                'ticket_code' => 'TKT' . date('YmdHis') . rand(100, 999),
+                'qty' => 1,
+                'total' => Ticket::find($request->ticket)->harga,
+            ]);
 
-                $trx->update([
-                    'total' => Ticket::find($request->ticket)->harga * $trx->qty
-                ]);
-            }
+
+            // }
 
             $amount = DetailTransaction::where(['transaction_id' => $request->transaction])->sum('qty');
 
-            if (!in_array($request->ticket, [11, 12])) {
-                $asuransi = DetailTransaction::where(['transaction_id' => $request->transaction, 'ticket_id' => 13])->first();
+            // if (!in_array($request->ticket, [11, 12])) {
+            //     $asuransi = DetailTransaction::where(['transaction_id' => $request->transaction, 'ticket_id' => 13])->first();
 
-                if ($asuransi) {
-                    $asuransi->update([
-                        'qty' => $amount - $asuransi->qty,
-                    ]);
+            //     if ($asuransi) {
+            //         $asuransi->update([
+            //             'qty' => $amount - $asuransi->qty,
+            //         ]);
 
-                    $asuransi->update([
-                        'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
-                    ]);
-                }
-            }
+            //         $asuransi->update([
+            //             'total' => $asuransi->qty * Ticket::find($asuransi->ticket_id)->harga
+            //         ]);
+            //     }
+            // }
 
             $detail = DetailTransaction::where('transaction_id', $request->transaction)->get();
             $totalPrice = DetailTransaction::where('transaction_id', $request->transaction)->sum('total');
@@ -304,6 +305,25 @@ class DetailTransactionController extends Controller
             return response()->json([
                 'message' => $th->getMessage()
             ]);
+        }
+    }
+
+    function testPrint()
+    {
+        try {
+            // Enter the share name for your USB printer here
+            // $connector = null;
+            $connector = new WindowsPrintConnector("Receipt Printer");
+
+            /* Print a "Hello world" receipt" */
+            $printer = new Printer($connector);
+            $printer->text("Hello World!\n");
+            $printer->cut();
+
+            /* Close printer */
+            $printer->close();
+        } catch (\Exception $e) {
+            return "Couldn't print to this printer: " . $e->getMessage() . "\n";
         }
     }
 }

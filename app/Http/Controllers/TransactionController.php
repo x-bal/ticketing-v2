@@ -101,15 +101,8 @@ class TransactionController extends Controller
                 'ticket_id' => 0,
                 'user_id' => auth()->user()->id,
                 'no_trx' => $notrx,
-                'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('dmY') . rand(100, 999)
+                'ticket_code' => 'INV' . Carbon::now('Asia/Jakarta')->format('/dmY') . '/' . rand(1000, 9999)
             ]);
-
-            // DetailTransaction::create([
-            //     'transaction_id' => $transaction->id,
-            //     'ticket_id' => 13,
-            //     'qty' => 0,
-            //     'total' => 0
-            // ]);
         }
 
         $total = $transaction->detail()->sum('total');
