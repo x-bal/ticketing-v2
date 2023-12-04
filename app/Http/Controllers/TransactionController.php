@@ -50,12 +50,6 @@ class TransactionController extends Controller
 
                     return $actionBtn;
                 })
-                ->editColumn('ticket', function ($row) {
-                    return $row->ticket->name;
-                })
-                ->editColumn('harga', function ($row) {
-                    return 'Rp. ' . number_format($row->ticket->harga, 0, ',', '.');
-                })
                 ->editColumn('disc', function ($row) {
                     return $row->discount . '%';
                 })

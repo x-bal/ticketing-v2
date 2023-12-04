@@ -34,11 +34,11 @@
             <thead>
                 <tr>
                     <th class="text-nowrap">No</th>
-                    <th class="text-nowrap">No Trx</th>
-                    <th class="text-nowrap">Ticket Code</th>
-                    <th class="text-nowrap">Ticket</th>
-                    <th class="text-nowrap">Harga</th>
-                    <th class="text-nowrap">Jumlah</th>
+                    <!-- <th class="text-nowrap">No Trx</th> -->
+                    <th class="text-nowrap">Invoice</th>
+                    <!-- <th class="text-nowrap">Ticket</th> -->
+                    <!-- <th class="text-nowrap">Harga</th> -->
+                    <th class="text-nowrap">Jumlah Ticket</th>
                     <th class="text-nowrap">Discount</th>
                     <th class="text-nowrap">Total</th>
                     <th class="text-nowrap">Status</th>
@@ -220,22 +220,22 @@
                 sortable: false,
                 searchable: false
             },
-            {
-                data: 'no_trx',
-                name: 'no_trx'
-            },
+            // {
+            //     data: 'no_trx',
+            //     name: 'no_trx'
+            // },
             {
                 data: 'ticket_code',
                 name: 'ticket_code'
             },
-            {
-                data: 'ticket',
-                name: 'ticket'
-            },
-            {
-                data: 'harga',
-                name: 'harga'
-            },
+            // {
+            //     data: 'ticket',
+            //     name: 'ticket'
+            // },
+            // {
+            //     data: 'harga',
+            //     name: 'harga'
+            // },
             {
                 data: 'amount',
                 name: 'amount'

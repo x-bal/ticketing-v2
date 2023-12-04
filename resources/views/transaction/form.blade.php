@@ -199,7 +199,7 @@
             });
         })
 
-        $("#bayar").on('change', function() {
+        $("#bayar").on('input', function() {
             let bayar = $(this).val().replace('.', '');
             let price = $("#totalPrice").val()
             let kembali = parseInt(bayar - price)

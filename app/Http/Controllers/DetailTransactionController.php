@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 use Yajra\DataTables\Facades\DataTables;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
@@ -157,89 +158,36 @@ class DetailTransactionController extends Controller
             DB::beginTransaction();
 
             $transaction = Transaction::find($id);
+
             $now = Carbon::now()->format('Y-m-d');
             $lastTrx = Transaction::whereDate('created_at', $now)->orderBy('no_trx', 'DESC')->first()->no_trx ?? 0;
             $tickets = [];
             $idtrx = [];
             $print = 1;
-            $tipe = 'group';
+            $tipe = 'individual';
 
-            $totalHarga =  $transaction->detail()->whereNotIn('ticket_id', [11, 12])->sum('total');
-            $parkir = $transaction->detail()->whereIn('ticket_id', [11, 12])->sum('total') ?? 0;
-            $jasaRaharja = Ticket::find(13);
-
-            $firstTrx = $transaction->detail()->whereNotIn('ticket_id', [13])->first();
+            $totalHarga =  $transaction->detail()->sum('total');
+            $firstTrx = $transaction->detail()->count();
 
             $discount = request('discount') ?? 0;
 
             $transaction->update([
-                'ticket_id' => $firstTrx->ticket_id,
-                'amount' => $firstTrx->qty,
+                'ticket_id' => 0,
+                'amount' => $firstTrx,
                 'is_active' => 1,
                 'discount' => $discount,
                 'metode' => request('metode')
             ]);
 
-            $details = $transaction->detail()->whereNotIn('ticket_id', [11, 12])->get();
-            $asuransi = $transaction->detail()->where('ticket_id', 13)->first();
-
-            foreach ($details as $detail) {
-                if ($detail->ticket_id != $transaction->ticket_id && $detail->ticket_id != 13) {
-                    $newTrx = Transaction::create([
-                        'user_id' => auth()->user()->id,
-                        'ticket_id' => $detail->ticket_id,
-                        'no_trx' => $transaction->no_trx += 1,
-                        'ticket_code' => 'RIOWP' . Carbon::now('Asia/Jakarta')->format('Ymd') . rand(100, 999),
-                        'tipe' => 'group',
-                        'amount' => $detail->qty,
-                        'is_active' => 1,
-                        'discount' => $discount,
-                        'metode' => request('metode')
-                    ]);
-
-                    $detail->update(
-                        [
-                            'transaction_id' => $newTrx->id,
-                        ]
-                    );
-
-                    $newTrx->update([
-                        'disc' => $newTrx->detail()->sum('total') * $discount / 100
-                    ]);
-
-                    if ($asuransi) {
-                        $newTrx->detail()->create([
-                            'ticket_id' => $jasaRaharja->id,
-                            'qty' => $newTrx->amount,
-                            'total' => $newTrx->amount * $jasaRaharja->harga
-                        ]);
-                    }
-
-                    $idtrx[] = $newTrx->id;
-                }
-            }
-
-            $transaction->update([
-                'disc' => $transaction->detail()->sum('total') * $discount / 100
-            ]);
-
-            $idtrx[] .= $transaction->id;
-
-            $tickets = Transaction::whereIn('id', $idtrx)->get();
-
-            if ($asuransi) {
-                $transaction->detail()->create([
-                    'ticket_id' => $jasaRaharja->id,
-                    'qty' => $transaction->amount,
-                    'total' => $transaction->amount * $jasaRaharja->harga
-                ]);
-
-                $asuransi->delete();
-            }
-
             DB::commit();
 
-            return view('transaction.print', compact('tipe', 'print', 'tickets'));
+            // return view('transaction.print', compact('tipe', 'print', 'tickets'));
+            $print = $this->print($transaction);
+            if ($print["status"] == "success") {
+                return back()->with('success', "Transaction success");
+            } else {
+                return back()->with('error', $print["message"]);
+            }
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
@@ -311,52 +259,79 @@ class DetailTransactionController extends Controller
         }
     }
 
-    function print()
+    function print($transaction)
     {
-        $transaction = Transaction::find(1);
-        // return view('transaction.single-print', compact('transaction'));
+        // $transaction = Transaction::where(['is_active', 1, 'is_print' => 0, 'user_id' => auth()->user()->id])->first();
+
         $pathTransactions = [];
-        $transactionFile = Pdf::loadView('transaction.transaction', [
-            'transaction' => $transaction
-        ]);
+        $transactionFile = View::make('transaction.transaction')->with(['transaction' => $transaction])->render();
+        $transactionPlain = strip_tags($transactionFile);
 
-        $pathTransaction = 'pdfs/transaction/' . str_replace('/', '', $transaction->ticket_code) . '.pdf';
-        Storage::put($pathTransaction, $transactionFile->output());
+        $pathTransactions[] = [
+            "invoice" => $transaction->ticket_code,
+            "content" => $transactionPlain,
+        ];
 
-        $pathTransactions[] = ImagickEscposImage::loadPdf($pathTransaction);
+        foreach ($transaction->detail as $key => $detail) {
+            $transactionDetailFile = View::make('transaction.detail')->with(['detail' => $detail])->render();
+            $transactionDetailPlain = strip_tags($transactionDetailFile);
 
-        foreach ($transaction->detail as $detail) {
-            $transactionDetailFile = Pdf::loadView('transaction.detail', [
-                'detail' => $detail
-            ]);
-
-            $pathTransactionDetail = 'pdfs/details/' . $detail->ticket_code . '.pdf';
-            Storage::put($pathTransactionDetail, $transactionDetailFile->output());
-
-            $pathTransactions[] = ImagickEscposImage::loadPdf($pathTransactionDetail);
+            $pathTransactions[] = [
+                "invoice" => $detail->ticket_code,
+                "content" => $transactionDetailPlain,
+            ];
         }
 
-        return $this->testPrint($pathTransactions);
+        $print = $this->testPrint($pathTransactions);
+        if ($print["status"] == "success") {
+            return [
+                "status" => "success"
+            ];
+        } else {
+            return [
+                "status" => "error",
+                "message" => $print['message']
+            ];
+        }
     }
 
     function testPrint($pathTransactions)
     {
         try {
-            // Enter the share name for your USB printer here
-            // $connector = null;
-            $connector = new WindowsPrintConnector("Receipt Printer");
+            $printerName = env('PRINTER');
+            $connector = new WindowsPrintConnector($printerName);
 
-            /* Print a "Hello world" receipt" */
             $printer = new Printer($connector);
-            // $printer->text("Hello World!\n");
+
             foreach ($pathTransactions as $path) {
-                $printer->graphics($path);
+                $printer->text($path["content"]);
                 $printer->cut();
             }
-            /* Close printer */
+
             $printer->close();
+
+            foreach ($pathTransactions as $path) {
+                $invoiceCode = $path["invoice"];
+                $transac = Transaction::where("ticket_code", $invoiceCode)->first();
+
+                if ($transac) {
+                    $transac->update(['is_print' => 1]);
+                } else {
+                    $detail = DetailTransaction::where('ticket_code', $invoiceCode)->first();
+                    if ($detail) {
+                        $detail->update(['is_print' => 1]);
+                    }
+                }
+            }
+
+            return [
+                'status' => 'success'
+            ];
         } catch (\Exception $e) {
-            return "Couldn't print to this printer: " . $e->getMessage() . "\n";
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
         }
     }
 }
