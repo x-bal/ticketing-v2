@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\DetailTransaction;
 use App\Models\Ticket;
 use App\Models\Transaction;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\ImagickEscposImage;
 
 class DetailTransactionController extends Controller
 {
@@ -308,7 +311,35 @@ class DetailTransactionController extends Controller
         }
     }
 
-    function testPrint()
+    function print()
+    {
+        $transaction = Transaction::find(1);
+        // return view('transaction.single-print', compact('transaction'));
+        $pathTransactions = [];
+        $transactionFile = Pdf::loadView('transaction.transaction', [
+            'transaction' => $transaction
+        ]);
+
+        $pathTransaction = 'pdfs/transaction/' . str_replace('/', '', $transaction->ticket_code) . '.pdf';
+        Storage::put($pathTransaction, $transactionFile->output());
+
+        $pathTransactions[] = ImagickEscposImage::loadPdf($pathTransaction);
+
+        foreach ($transaction->detail as $detail) {
+            $transactionDetailFile = Pdf::loadView('transaction.detail', [
+                'detail' => $detail
+            ]);
+
+            $pathTransactionDetail = 'pdfs/details/' . $detail->ticket_code . '.pdf';
+            Storage::put($pathTransactionDetail, $transactionDetailFile->output());
+
+            $pathTransactions[] = ImagickEscposImage::loadPdf($pathTransactionDetail);
+        }
+
+        return $this->testPrint($pathTransactions);
+    }
+
+    function testPrint($pathTransactions)
     {
         try {
             // Enter the share name for your USB printer here
@@ -317,9 +348,11 @@ class DetailTransactionController extends Controller
 
             /* Print a "Hello world" receipt" */
             $printer = new Printer($connector);
-            $printer->text("Hello World!\n");
-            $printer->cut();
-
+            // $printer->text("Hello World!\n");
+            foreach ($pathTransactions as $path) {
+                $printer->graphics($path);
+                $printer->cut();
+            }
             /* Close printer */
             $printer->close();
         } catch (\Exception $e) {

@@ -103,3 +103,4 @@ Route::get('reset', function () {
 });
 
 Route::get('test-print', [DetailTransactionController::class, 'testPrint']);
+Route::get('test-pdf', [DetailTransactionController::class, 'print']);
