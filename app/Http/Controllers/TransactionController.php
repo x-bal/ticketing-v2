@@ -238,8 +238,9 @@ class TransactionController extends Controller
         $logo = asset('/storage/' . $setting->logo) ?? 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/images/rio.png')));
         $ucapan = $setting->ucapan ?? 'Terima Kasih';
         $deskripsi = $setting->deskripsi ?? 'qr code hanya berlaku satu kali';
+        $use = $setting->use_logo;
 
-        return view('transaction.print', compact('transaction', 'logo', 'ucapan', 'deskripsi'));
+        return view('transaction.print', compact('transaction', 'logo', 'ucapan', 'deskripsi', 'use'));
     }
 
     public function report(Request $request)

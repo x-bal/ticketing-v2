@@ -40,6 +40,8 @@ class SettingController extends Controller
             $logo = $request->file('logo');
             $logoUrl = '';
 
+            $attr['use_logo'] = $request->use_logo ?? 0;
+
             if ($setting) {
                 if ($request->file('logo')) {
                     Storage::delete($setting->logo);

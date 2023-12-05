@@ -49,6 +49,11 @@
                 @enderror
             </div>
 
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="show" name="use_logo" {{ $setting->use_logo == 1 ? 'checked' : '' }} />
+                <label class="form-check-label" for="show">Show Logo</label>
+            </div>
+
             <div class="form-group mb-3">
                 <label for="logo">Logo</label>
                 <input type="file" name="logo" id="logo" class="form-control" value="{{ $setting->logo ?? old('logo') }}">
