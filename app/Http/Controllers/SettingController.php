@@ -30,7 +30,7 @@ class SettingController extends Controller
             'name' => 'required|string',
             'ucapan' => 'required|string',
             'deskripsi' => 'required|string',
-            'logo' => 'required|mimes:jpg,jpeg,png,gif',
+            'logo' => 'nullable|mimes:jpg,jpeg,png,gif',
         ]);
 
         try {
@@ -41,7 +41,7 @@ class SettingController extends Controller
             $logoUrl = '';
 
             if ($setting) {
-                if ($request->logo) {
+                if ($request->file('logo')) {
                     Storage::delete($setting->logo);
                     $logoUrl = $logo->storeAs('logo', date('ymdhis') . rand(100, 990) . '.' . $logo->extension());
                 } else {
