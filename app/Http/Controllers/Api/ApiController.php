@@ -181,12 +181,12 @@ class ApiController extends Controller
             //     ]);
             // }
         } else {
-            $now = Carbon::now()->format('Y-m-d');
+            $now = Carbon::now('Asia/Jakarta')->format('Y-m-d');
 
             $member = Member::where('rfid', $request->ticket)->first();
 
             if ($member) {
-                if ($now > $member->tgl_register && $now <= $member->tgl_expired) {
+                if ($now >= $member->tgl_register && $now <= $member->tgl_expired) {
                     $history = History::where('member_id', $member->id)->whereDate('created_at', $now)->count();
 
                     if ($history >= 2) {
