@@ -181,13 +181,13 @@ class DetailTransactionController extends Controller
 
             DB::commit();
 
-            // return view('transaction.print', compact('tipe', 'print', 'tickets'));
-            $print = $this->print($transaction);
-            if ($print["status"] == "success") {
-                return back()->with('success', "Transaction success");
-            } else {
-                return back()->with('error', $print["message"]);
-            }
+            return view('transaction.print', compact('transaction'));
+            // $print = $this->print($transaction);
+            // if ($print["status"] == "success") {
+            //     return back()->with('success', "Transaction success");
+            // } else {
+            //     return back()->with('error', $print["message"]);
+            // }
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
