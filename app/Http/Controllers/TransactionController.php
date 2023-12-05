@@ -232,7 +232,7 @@ class TransactionController extends Controller
 
     public function print(Transaction $transaction)
     {
-        return view('transaction.single-print', compact('transaction'));
+        return view('transaction.print', compact('transaction'));
     }
 
     public function report(Request $request)

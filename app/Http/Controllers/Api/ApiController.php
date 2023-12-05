@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\DetailTransaction;
 use App\Models\History;
 use App\Models\Member;
 use App\Models\Terusan;
@@ -53,39 +54,39 @@ class ApiController extends Controller
     public function checkIndividualTicket($ticket)
     {
 
-        $transScanned = Transaction::where('ticket_code', $ticket)->where('tipe', 'individual')
-            ->select(['amount', 'amount_scanned', 'status'])->first();
+        $transScanned = DetailTransaction::where('ticket_code', $ticket)
+            ->select(['qty', 'scanned', 'status'])->first();
 
         if (!$transScanned) {
             return response()->json([
-                "status" => "not found"
+                "status" => "Not found"
             ]);
         }
 
-        if ($transScanned->status == "closed") {
+        if ($transScanned->status == "close") {
             return response()->json([
                 "status" => $transScanned->status,
                 "count" => 0
             ]);
         }
 
-        $counting = $transScanned->amount_scanned + 1;
-        if ($transScanned->amount == $counting) {
-            Transaction::where('ticket_code', $ticket)
-                ->update([
-                    "status" => "closed",
-                    "amount_scanned" => $counting
-                ]);
-        } else {
-            Transaction::where('ticket_code', $ticket)
-                ->update([
-                    "amount_scanned" => $counting
-                ]);
-        }
+        // $counting = $transScanned->scanned + 1;
+        // if ($transScanned->qty == $counting) {
+        DetailTransaction::where('ticket_code', $ticket)
+            ->update([
+                "status" => "close",
+                // "scanned" => $counting
+            ]);
+        // } else {
+        //     DetailTransaction::where('ticket_code', $ticket)
+        //         ->update([
+        //             "scanned" => $counting
+        //         ]);
+        // }
 
         return response()->json([
             "status" => $transScanned->status,
-            "count" => $transScanned->amount - $counting
+            "count" => $transScanned->qty
         ]);
     }
 
