@@ -207,6 +207,11 @@ class ApiController extends Controller
                             "count" => 2 - $newHistory
                         ]);
                     }
+                } else {
+                    return response()->json([
+                        "status" => 'error',
+                        "message" => "Member expired"
+                    ]);
                 }
             } else {
                 return response()->json([
