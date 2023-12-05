@@ -208,6 +208,11 @@ class ApiController extends Controller
                         ]);
                     }
                 }
+            } else {
+                return response()->json([
+                    "status" => 'error',
+                    "message" => "Member not found"
+                ]);
             }
         }
     }
