@@ -5,7 +5,7 @@
     <title>Print QR</title>
     <style>
         @media print {
-            .row {
+            .ticket-row {
                 page-break-after: always;
             }
         }
