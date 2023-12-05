@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ReportExport;
 use App\Http\Requests\Transaction\CreateTransactionRequest;
 use App\Models\DetailTransaction;
+use App\Models\Setting;
 use App\Models\Sewa;
 use App\Models\Ticket;
 use App\Models\Transaction;
@@ -232,7 +233,13 @@ class TransactionController extends Controller
 
     public function print(Transaction $transaction)
     {
-        return view('transaction.print', compact('transaction'));
+        $setting = Setting::first();
+
+        $logo = asset('/storage/' . $setting->logo) ?? 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/images/rio.png')));
+        $ucapan = $setting->ucapan ?? 'Terima Kasih';
+        $deskripsi = $setting->deskripsi ?? 'qr code hanya berlaku satu kali';
+
+        return view('transaction.print', compact('transaction', 'logo', 'ucapan', 'deskripsi'));
     }
 
     public function report(Request $request)

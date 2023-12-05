@@ -254,6 +254,15 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="menu-item {{ request()->is('setting*') ? 'active' : '' }}">
+                        <a href="{{ route('setting.index') }}" class="menu-link">
+                            <div class="menu-icon">
+                                <i class="ion-ios-nutrition bg-blue"></i>
+                            </div>
+                            <div class="menu-text">Setting</div>
+                        </a>
+                    </div>
                     @endcan
 
                     <div class="menu-item d-flex">

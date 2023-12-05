@@ -17,7 +17,7 @@
         <div class="qr-code" style="max-width:80mm !important;  margin: 0 auto 0 auto; vertical-align: top; border-style: solid;border-width: 1px;">
             <div class="detail" style="font-size: 10pt; line-height: 18px; margin-top: 10px; margin-bottom: 10px;">
                 <span style="display: flex; text-align: center; font-weight: 900; font-size: 10pt; margin-bottom: 10px; justify-content: space-between; margin-left: 10px; margin-right: 10px;">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/rio.png'))) }}" width="65" alt="The Logo" class="brand-image" style="opacity: .8; margin-top: -15px !important;">
+                    <img src="{{ $logo }}" width="65" alt="The Logo" class="brand-image" style="opacity: .8; margin-top: -15px !important;">
 
                     <span>
                         <span style="display: block;">{{ $transaction->ticket_code }}</span>
@@ -48,7 +48,7 @@
                     <span>Rp. {{ number_format($transaction->kembali, 0, ',', '.') }}</span>
                 </div>
                 <hr style="border-style: dashed;">
-                <p style="font-size:9pt;text-align: center;margin-bottom:10px; text-transform: uppercase;">*terima kasih*</p>
+                <p style="font-size:9pt;text-align: center;margin-bottom:10px; text-transform: uppercase;">{{ $ucapan }}</p>
             </div>
         </div>
     </div>
@@ -69,7 +69,7 @@
             </p>
 
             <hr style="border-style: dashed;">
-            <p style="font-size:9pt;text-align: center;margin-bottom:10px; text-transform: uppercase;">*QRCODE hanya untuk buka gate*</p>
+            <p style="font-size:9pt;text-align: center;margin-bottom:10px; text-transform: uppercase;">{{ $deskripsi }}</p>
         </div>
     </div>
     @endforeach

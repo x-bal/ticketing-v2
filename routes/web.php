@@ -8,6 +8,7 @@ use App\Http\Controllers\PenyewaanController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SewaController;
 use App\Http\Controllers\TerusanController;
 use App\Http\Controllers\TicketController;
@@ -90,6 +91,9 @@ Route::middleware('auth')->group(function () {
     Route::get('report/penyewaan-list', [ReportController::class, 'penyewaanList'])->name('reports.penyewaan-list');
     Route::get('rekap/penyewaan', [ReportController::class, 'rekapPenyewaan'])->name('rekap.penyewaan');
     Route::get('export-penyewaan', [ReportController::class, 'exportPenyewaan'])->name('penyewaan.export');
+
+    Route::get('setting', [SettingController::class, 'index'])->name('setting.index');
+    Route::post('setting', [SettingController::class, 'store'])->name('setting.store');
 });
 
 Route::get('/detail-group', [ApiController::class, 'detailGroup']);

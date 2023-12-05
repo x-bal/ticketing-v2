@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTransaction;
+use App\Models\Setting;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -180,8 +181,13 @@ class DetailTransactionController extends Controller
             ]);
 
             DB::commit();
+            $setting = Setting::first();
 
-            return view('transaction.print', compact('transaction'));
+            $logo = asset('/storage/' . $setting->logo) ?? 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/images/rio.png')));
+            $ucapan = $setting->ucapan ?? 'Terima Kasih';
+            $deskripsi = $setting->deskripsi ?? 'qr code hanya berlaku satu kali';
+
+            return view('transaction.print', compact('transaction', 'logo', 'ucapan', 'deskripsi'));
             // $print = $this->print($transaction);
             // if ($print["status"] == "success") {
             //     return back()->with('success', "Transaction success");

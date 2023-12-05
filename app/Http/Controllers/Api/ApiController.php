@@ -137,47 +137,42 @@ class ApiController extends Controller
 
     public function check(Request $request)
     {
-        $transScanned = Transaction::where('ticket_code', $request->ticket)->first();
+        $transScanned = DetailTransaction::where('ticket_code', $request->ticket)->first();
 
         if ($transScanned) {
             // if ($transScanned->ticket->tripod == $request->tripod) {
-            Transaction::where('ticket_code', $request->ticket)
+            DetailTransaction::where('ticket_code', $request->ticket)
                 ->update([
                     "gate" => $request->gate,
                 ]);
 
             if (!$transScanned) {
                 return response()->json([
-                    "status" => "not found"
+                    "status" => "Not found"
                 ]);
             }
 
 
-            if ($transScanned->status == "closed") {
+            if ($transScanned->status == "close") {
                 return response()->json([
                     "status" => $transScanned->status,
                     "count" => 0
                 ]);
             }
 
-            $counting = $transScanned->amount_scanned + 1;
+            $counting = 0;
 
-            if ($transScanned->amount == $counting) {
-                Transaction::where('ticket_code', $request->ticket)
-                    ->update([
-                        "status" => "closed",
-                        "amount_scanned" => $counting
-                    ]);
-            } else {
-                Transaction::where('ticket_code', $request->ticket)
-                    ->update([
-                        "amount_scanned" => $counting
-                    ]);
-            }
+            DetailTransaction::where('ticket_code', $request->ticket)
+                ->update([
+                    "status" => "close",
+                    "scanned" => 1
+                ]);
+
+            $transaction = DetailTransaction::find($transScanned->id);
 
             return response()->json([
-                "status" => $transScanned->status,
-                "count" => $transScanned->amount - $counting
+                "status" => $transaction->status,
+                "count" => $transaction->amount - $counting
             ]);
             // } else {
             //     return response()->json([
