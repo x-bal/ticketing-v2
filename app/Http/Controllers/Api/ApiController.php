@@ -189,24 +189,24 @@ class ApiController extends Controller
                 if ($now >= $member->tgl_register && $now <= $member->tgl_expired) {
                     $history = History::where('member_id', $member->id)->whereDate('created_at', $now)->count();
 
-                    if ($history >= 2) {
-                        return response()->json([
-                            "status" => 'closed',
-                            "count" => 0
-                        ]);
-                    } else {
-                        History::create([
-                            'member_id' => $member->id,
-                            'gate' => $request->gate
-                        ]);
+                    // if ($history >= 99) {
+                    //     return response()->json([
+                    //         "status" => 'closed',
+                    //         "count" => 0
+                    //     ]);
+                    // } else {
+                    History::create([
+                        'member_id' => $member->id,
+                        'gate' => $request->gate
+                    ]);
 
-                        $newHistory = History::where('member_id', $member->id)->whereDate('created_at', $now)->count();
+                    $newHistory = History::where('member_id', $member->id)->whereDate('created_at', $now)->count();
 
-                        return response()->json([
-                            "status" => 'open',
-                            "count" => 2 - $newHistory
-                        ]);
-                    }
+                    return response()->json([
+                        "status" => 'open',
+                        "count" => 2 - $newHistory
+                    ]);
+                    // }
                 } else {
                     return response()->json([
                         "status" => 'error',
