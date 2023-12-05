@@ -204,7 +204,7 @@ class ApiController extends Controller
 
                     return response()->json([
                         "status" => 'open',
-                        "count" => 2 - $newHistory
+                        // "count" => 2 - $newHistory
                     ]);
                     // }
                 } else {
