@@ -171,7 +171,7 @@ class ApiController extends Controller
             $transaction = DetailTransaction::find($transScanned->id);
 
             return response()->json([
-                "status" => $transaction->status,
+                "status" => "open",
                 "count" => $transaction->amount - $counting
             ]);
             // } else {
