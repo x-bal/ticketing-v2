@@ -235,10 +235,10 @@ class TransactionController extends Controller
     {
         $setting = Setting::first();
 
-        $logo = asset('/storage/' . $setting->logo) ?? 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/images/rio.png')));
+        $logo = $setting ? asset('/storage/' . $setting->logo) : 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/images/rio.png')));
         $ucapan = $setting->ucapan ?? 'Terima Kasih';
         $deskripsi = $setting->deskripsi ?? 'qr code hanya berlaku satu kali';
-        $use = $setting->use_logo;
+        $use = $setting->use_logo ?? false;
 
         return view('transaction.print', compact('transaction', 'logo', 'ucapan', 'deskripsi', 'use'));
     }
